@@ -1,0 +1,14 @@
+/* Component-scoped overrides for the Help Center. */
+.help-page .help-content { padding-top: 34px; }
+.help-page .help-quick-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 0; }
+.help-page .help-quick-grid article { min-height: 148px; padding: 22px; }
+.help-page .help-layout { margin-top: 28px; }
+
+@media (max-width: 800px) {
+  .help-page .help-quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 520px) {
+  .help-page .help-quick-grid { grid-template-columns: 1fr; margin-top: 0; }
+  .help-page .help-quick-grid article { min-height: auto; }
+}

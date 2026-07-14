@@ -1,0 +1,96 @@
+/* Final visual polish: a calmer, more consistent financial-product surface. */
+:root {
+  --surface-raised: rgba(19, 29, 45, 0.72);
+  --surface-hover: rgba(27, 40, 60, 0.82);
+  --border-subtle: rgba(203, 213, 225, 0.11);
+  --border-focus: rgba(249, 115, 22, 0.38);
+}
+
+.card,
+.scheme-card,
+.road-card,
+.admin-sidebar-card,
+.scheme-guide-card,
+.help-quick-grid article,
+.help-sidebar,
+.faq-panel {
+  background: linear-gradient(145deg, var(--surface-raised), rgba(12, 20, 34, 0.8));
+  border-color: var(--border-subtle);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+}
+
+.card:hover,
+.scheme-card:hover,
+.road-card:hover,
+.scheme-guide-card:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(145deg, var(--surface-hover), rgba(12, 20, 34, 0.88));
+  border-color: rgba(203, 213, 225, 0.18);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+/* Reserve colour for semantic states and actions, rather than every card. */
+.card-accent-orange,
+.card-accent-blue,
+.card-accent-green,
+.card-accent-purple,
+.card-accent-teal,
+.card-accent-indigo {
+  border-left: 1px solid var(--border-subtle);
+}
+
+.card-accent-orange:hover,
+.card-accent-blue:hover,
+.card-accent-green:hover,
+.card-accent-purple:hover,
+.card-accent-teal:hover,
+.card-accent-indigo:hover {
+  border-left-color: var(--border-focus);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+}
+
+.scheme-color-0,
+.scheme-color-1,
+.scheme-color-2,
+.scheme-color-3 {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.scheme-color-0 .scheme-icon,
+.scheme-color-1 .scheme-icon,
+.scheme-color-2 .scheme-icon,
+.scheme-color-3 .scheme-icon {
+  background: rgba(249, 115, 22, 0.1);
+  color: #f4b264;
+}
+
+.components-section {
+  background: radial-gradient(ellipse at bottom, rgba(249, 115, 22, 0.035), transparent 62%);
+}
+
+.eyebrow,
+.road-phase,
+.scheme-tag {
+  letter-spacing: 0.075em;
+}
+
+.kyc-item,
+.admin-kyc-item,
+.faq-item,
+.app-item {
+  border-color: var(--border-subtle);
+}
+
+.journey-progress { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 4px 0 24px; }
+.journey-step { display: flex; align-items: center; gap: 9px; color: var(--text-muted); font-size: 12px; font-weight: 700; }
+.journey-step span { width: 27px; height: 27px; display: grid; place-items: center; border: 1px solid var(--border-subtle); border-radius: 50%; background: rgba(255,255,255,.025); }
+.journey-step.active { color: var(--text-primary); }.journey-step.active span { border-color: var(--border-focus); color: #f4b264; }.journey-step.done { color: var(--text-secondary); }.journey-step.done span { background: rgba(249,115,22,.12); border-color: rgba(249,115,22,.28); color: #f4b264; }
+.journey-panel { margin: 18px 0; }.journey-panel-head { display: flex; align-items: flex-start; gap: 12px; padding: 0 2px 12px; }.journey-panel-head > span { color: #f4b264; background: rgba(249,115,22,.11); border: 1px solid rgba(249,115,22,.2); border-radius: 999px; padding: 4px 9px; font-size: 11px; font-weight: 800; white-space: nowrap; }.journey-panel-head h3 { margin: 1px 0 4px; color: var(--text-primary); font-size: 16px; }.journey-panel-head p { margin: 0; color: var(--text-secondary); font-size: 13px; }.journey-panel .card { margin: 0; }
+.journey-locked { display: grid; gap: 5px; padding: 17px 19px; margin: 14px 0; border: 1px dashed var(--border-subtle); border-radius: 13px; background: rgba(255,255,255,.012); }.journey-locked b { color: var(--text-secondary); font-size: 13px; }.journey-locked span { color: var(--text-muted); font-size: 12px; }
+.advanced-tools { margin-top: 24px; border: 1px solid var(--border-subtle); border-radius: 13px; padding: 0 18px 18px; background: rgba(255,255,255,.012); }.advanced-tools summary { cursor: pointer; padding: 17px 0; color: var(--text-secondary); font-size: 13px; font-weight: 750; }.advanced-tools summary span { margin-left: 7px; color: var(--text-muted); font-size: 11px; font-weight: 600; }.advanced-tools[open] summary { color: var(--text-primary); }
+@media (max-width: 760px) { .journey-progress { grid-template-columns: repeat(2, 1fr); row-gap: 15px; }.journey-step small { font-size: 11px; }.journey-panel-head { gap: 9px; }.advanced-tools { padding: 0 12px 12px; } }
+
+.advanced-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }.advanced-full { margin-top: 16px; }.advanced-tools .card { height: 100%; }.advanced-tools .compact-upi-report { max-width: none; }.advanced-tools .social-security-card, .advanced-tools .compact-upi-report { margin-bottom: 0; }@media (max-width: 760px) { .advanced-grid { grid-template-columns: 1fr; } }
+
+.compact-upi-report .card-title { gap: 8px; }.upi-table { border: 1px solid var(--border-subtle); border-radius: 10px; overflow: hidden; }.upi-row { display: grid; grid-template-columns: 1fr 1.35fr 1fr; align-items: center; gap: 12px; padding: 11px 13px; border-top: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 13px; }.upi-row:first-child { border-top: 0; }.upi-row b { color: var(--text-primary); }.upi-head { color: var(--text-muted); background: rgba(255,255,255,.025); font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }.upi-pattern { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; }.upi-pattern.normal { color: #86d3b3; }.upi-pattern.suspicious { color: #f4b264; }.upi-rule { margin: 12px 0 0; color: var(--text-muted); font-size: 11px; }@media (max-width: 520px) { .upi-row { grid-template-columns: 1fr 1.2fr; }.upi-row > :last-child { grid-column: 1 / -1; }.upi-head > :last-child { display: none; } }
+.upi-verification-report { margin: 16px 0; border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; }.upi-decision { display: grid; gap: 5px; padding: 13px 15px; font-size: 12px; }.upi-decision.approved { background: rgba(46,204,113,.12); color: #9be4be; }.upi-decision.review { background: rgba(244,178,100,.12); color: #f4c787; }.upi-decision b { font-size: 11px; letter-spacing: .08em; }.upi-decision span { color: var(--text-secondary); }.upi-report-summary { display: grid; grid-template-columns: repeat(4,1fr); border-top: 1px solid var(--border-subtle); }.upi-report-summary > div { padding: 12px; border-right: 1px solid var(--border-subtle); }.upi-report-summary > div:last-child { border-right: 0; }.upi-report-summary small,.upi-check small { display: block; color: var(--text-muted); font-size: 10px; }.upi-report-summary strong { display: block; margin-top: 4px; color: var(--text-primary); font-size: 13px; text-transform: capitalize; }.upi-check { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; padding: 10px 13px; border-top: 1px solid var(--border-subtle); font-size: 12px; }.upi-check > span { font-weight: 900; }.upi-check.pass > span,.upi-check.pass em { color: #86d3b3; }.upi-check.review > span,.upi-check.review em { color: #f4b264; }.upi-check em { font-size: 10px; font-style: normal; font-weight: 800; letter-spacing: .05em; }@media (max-width:600px) { .upi-report-summary { grid-template-columns: repeat(2,1fr); }.upi-report-summary > div:nth-child(2) { border-right: 0; }.upi-report-summary > div:nth-child(-n+2) { border-bottom: 1px solid var(--border-subtle); } }
