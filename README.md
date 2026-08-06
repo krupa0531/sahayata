@@ -14,7 +14,7 @@ npm run backend
 npm run dev
 ```
 
-`npm run backend` starts the canonical API in `../backend`, including the real male voice service. Do not start the legacy `sahayata-app/backend/main.py` directly.
+`npm run backend` starts the canonical API in `../backend`, including the real male voice service. Do not start the legacy `sahayata-app/backend/run.py` directly.
 
 ## Loan voice guide
 
