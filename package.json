@@ -5,16 +5,32 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "backend": "cd /d ..\\backend && uv run --with-requirements requirements.txt python run.py",
+    "backend": "cd /d ..\\backend && python run.py",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "d3-scale": "^4.0.2",
+    "framer-motion": "^12.42.2",
+    "gsap": "^3.15.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "leaflet": "^1.9.4",
     "lucide-react": "^1.22.0",
+    "prop-types": "^15.8.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "socket.io-client": "^4.8.3"
+    "react-is": "^19.2.8",
+    "react-leaflet": "^5.0.0",
+    "react-simple-maps": "^3.0.0",
+    "recharts": "^3.10.1",
+    "socket.io-client": "^4.8.3",
+    "three": "^0.185.1",
+    "topojson-client": "^3.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",

@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import { calculateEligibility } from "../api";
-import SpeechButton from "./SpeechButton";
 import VoiceInputButton from "./VoiceInputButton";
 
 const fmt = (v) => "₹" + Math.round(v).toLocaleString("en-IN");
@@ -109,7 +108,6 @@ export default function Calculator({ onEligibilityChange, lang = "en" }) {
       try {
         const data = await calculateEligibility(earn, exp);
         setResult(data);
-        onEligibilityChange?.(data);
       } catch {
         const safeExp = Math.min(exp, earn - 50);
         const buffer = earn - safeExp;
@@ -130,83 +128,199 @@ export default function Calculator({ onEligibilityChange, lang = "en" }) {
       }
     }, 350);
     return () => clearTimeout(timer);
-  }, [earn, exp, onEligibilityChange, lang, t]);
+  }, [earn, exp, lang, t]);
 
   const safeExp = result?.daily_expense ?? Math.min(exp, earn - 50);
   const buffer = result?.net_daily_buffer ?? earn - safeExp;
 
   return (
-    <div className="card card-accent-orange" id="eligibility-calculator">
-      <div className="eyebrow">Interactive Suite</div>
-      <div className="card-title" style={{ display: "flex", alignItems: "center", gap: 7 }}>
-        <IconCalc /> {t("title")}
-        <SpeechButton text={`${t("title")}. ${t("sub")}`} lang={lang} />
-        {loading && <span className="api-pill">{t("syncing")}</span>}
+    <div className="official-form-section" id="eligibility-calculator">
+      {/* Form Section Banner */}
+      <div style={{ background: "rgba(56, 189, 248, 0.08)", border: "1px solid rgba(56, 189, 248, 0.2)", borderRadius: "14px", padding: "16px 20px", marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ background: "rgba(56, 189, 248, 0.2)", color: "#38bdf8", padding: "8px", borderRadius: "10px" }}>
+            <IconCalc />
+          </div>
+          <div>
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: "#f8fafc" }}>
+              {t("title")}
+            </h3>
+            <span style={{ fontSize: "12.5px", color: "#94a3b8" }}>{t("sub")}</span>
+          </div>
+        </div>
+        {loading && <span className="api-pill" style={{ background: "rgba(56, 189, 248, 0.15)", color: "#38bdf8", padding: "4px 10px", borderRadius: "99px", fontSize: "11px", fontWeight: "700" }}>{t("syncing")}</span>}
       </div>
-      <div className="card-sub">{t("sub")}</div>
 
-      <div className="calc-slider-row">
-        <label>{t("earning")} (₹)</label>
-        <input type="range" min={200} max={3000} step={50} value={earn}
-          onChange={(e) => setEarn(Number(e.target.value))} />
-        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+      {/* 2-Column Form Fields */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", marginBottom: "24px" }}>
+        {/* Field 1: Daily Earning */}
+        <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "14px", padding: "18px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <label style={{ fontSize: "13.5px", fontWeight: "700", color: "#f8fafc", margin: 0 }}>
+              {t("earning")} (₹ / Day)
+            </label>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ fontSize: "16px", fontWeight: "800", color: "#38bdf8" }}>₹{earn.toLocaleString("en-IN")}</span>
+              <VoiceInputButton onTranscript={(val) => setEarn(val)} lang={lang} type="number" />
+            </div>
+          </div>
+
           <input
-            type="number"
+            type="range"
+            min={200}
+            max={3000}
+            step={50}
             value={earn}
-            onChange={(e) => setEarn(Math.max(0, Number(e.target.value)))}
-            aria-label={t("earning")}
-            style={{
-              width: "75px",
-              padding: "6px 8px",
-              background: "var(--bg-input)",
-              border: "1px solid var(--border-medium)",
-              borderRadius: "8px",
-              color: "var(--text-primary)",
-              textAlign: "right",
-              fontSize: "13px",
-              fontWeight: "600"
-            }}
+            onChange={(e) => setEarn(Number(e.target.value))}
+            style={{ width: "100%", accentColor: "#38bdf8", cursor: "pointer", marginBottom: "12px" }}
           />
-          <VoiceInputButton onTranscript={(val) => setEarn(val)} lang={lang} type="number" />
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: "11px", color: "#64748b" }}>Min: ₹200</span>
+            <input
+              type="number"
+              value={earn}
+              onChange={(e) => setEarn(Math.max(0, Number(e.target.value)))}
+              aria-label={t("earning")}
+              style={{
+                width: "90px",
+                padding: "6px 10px",
+                background: "rgba(15, 23, 42, 0.8)",
+                border: "1px solid rgba(56, 189, 248, 0.3)",
+                borderRadius: "8px",
+                color: "#f8fafc",
+                textAlign: "right",
+                fontSize: "13.5px",
+                fontWeight: "700",
+              }}
+            />
+            <span style={{ fontSize: "11px", color: "#64748b" }}>Max: ₹3,000</span>
+          </div>
         </div>
-      </div>
-      <div className="calc-slider-row">
-        <label>{t("expense")} (₹)</label>
-        <input type="range" min={100} max={earn - 50} step={50} value={safeExp}
-          onChange={(e) => setExp(Number(e.target.value))} />
-        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+
+        {/* Field 2: Daily Expenses */}
+        <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "14px", padding: "18px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <label style={{ fontSize: "13.5px", fontWeight: "700", color: "#f8fafc", margin: 0 }}>
+              {t("expense")} (₹ / Day)
+            </label>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ fontSize: "16px", fontWeight: "800", color: "#f59e0b" }}>₹{safeExp.toLocaleString("en-IN")}</span>
+              <VoiceInputButton onTranscript={(val) => setExp(val)} lang={lang} type="number" />
+            </div>
+          </div>
+
           <input
-            type="number"
+            type="range"
+            min={100}
+            max={earn - 50}
+            step={50}
             value={safeExp}
-            onChange={(e) => setExp(Math.max(0, Number(e.target.value)))}
-            aria-label={t("expense")}
-            style={{
-              width: "75px",
-              padding: "6px 8px",
-              background: "var(--bg-input)",
-              border: "1px solid var(--border-medium)",
-              borderRadius: "8px",
-              color: "var(--text-primary)",
-              textAlign: "right",
-              fontSize: "13px",
-              fontWeight: "600"
-            }}
+            onChange={(e) => setExp(Number(e.target.value))}
+            style={{ width: "100%", accentColor: "#f59e0b", cursor: "pointer", marginBottom: "12px" }}
           />
-          <VoiceInputButton onTranscript={(val) => setExp(val)} lang={lang} type="number" />
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: "11px", color: "#64748b" }}>Min: ₹100</span>
+            <input
+              type="number"
+              value={safeExp}
+              onChange={(e) => setExp(Math.max(0, Number(e.target.value)))}
+              aria-label={t("expense")}
+              style={{
+                width: "90px",
+                padding: "6px 10px",
+                background: "rgba(15, 23, 42, 0.8)",
+                border: "1px solid rgba(245, 158, 11, 0.3)",
+                borderRadius: "8px",
+                color: "#f8fafc",
+                textAlign: "right",
+                fontSize: "13.5px",
+                fontWeight: "700",
+              }}
+            />
+            <span style={{ fontSize: "11px", color: "#64748b" }}>Max: ₹{(earn - 50).toLocaleString("en-IN")}</span>
+          </div>
         </div>
       </div>
-      <div className="calc-result">
-        <div className="calc-result-left">
-          <div className="lbl">{t("buffer")}</div>
-          <div className="val">{fmt(buffer)}</div>
+
+      {/* Official Assessment Summary Result Card */}
+      <div
+        style={{
+          background: "linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%)",
+          border: "1px solid rgba(56, 189, 248, 0.3)",
+          borderRadius: "16px",
+          padding: "20px",
+          marginBottom: "24px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "16px",
+        }}
+      >
+        <div>
+          <div style={{ fontSize: "12px", fontWeight: "700", color: "#94a3b8", textTransform: "uppercase" }}>
+            {t("buffer")}
+          </div>
+          <div style={{ fontSize: "24px", fontWeight: "900", color: "#34d399", marginTop: "2px" }}>
+            {fmt(buffer)} <span style={{ fontSize: "13px", fontWeight: "600", color: "#94a3b8" }}>/ Day</span>
+          </div>
+          <div style={{ fontSize: "12.5px", color: "#cbd5e1", marginTop: "4px" }}>
+            Estimated Monthly Disposable Savings: <strong style={{ color: "#38bdf8" }}>₹{(buffer * 26).toLocaleString("en-IN")}</strong>
+          </div>
         </div>
+
         {result && (
-          <span className={`tier-badge ${result.css_class}`}>{translateLabel(result.label)}</span>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontSize: "12px", color: "#94a3b8", marginBottom: "4px" }}>
+              {lang === "hi" ? "पात्रता स्थिति" : lang === "gu" ? "પાત્રતા સ્થિતિ" : "Eligibility Tier"}
+            </div>
+            <span
+              style={{
+                display: "inline-block",
+                background: "linear-gradient(135deg, #0284c7, #38bdf8)",
+                color: "#ffffff",
+                padding: "6px 16px",
+                borderRadius: "999px",
+                fontSize: "13.5px",
+                fontWeight: "800",
+                boxShadow: "0 2px 10px rgba(2, 132, 199, 0.4)",
+              }}
+            >
+              {translateLabel(result.label)}
+            </span>
+          </div>
         )}
       </div>
+
       {result?.recommendation && (
-        <p className="calc-recommendation">{translateRecommendation(result.recommendation)}</p>
+        <div style={{ background: "rgba(56, 189, 248, 0.06)", borderLeft: "3px solid #38bdf8", borderRadius: "8px", padding: "12px 16px", marginBottom: "24px", color: "#cbd5e1", fontSize: "13px", lineHeight: "1.5" }}>
+          <strong>{lang === "hi" ? "सिफारिश:" : lang === "gu" ? "ભલામણ:" : "Recommendation:"}</strong> {translateRecommendation(result.recommendation)}
+        </div>
       )}
+
+      {/* Primary Form Proceed Button */}
+      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+        <button
+          type="button"
+          onClick={() => onEligibilityChange && onEligibilityChange(result?.eligible_amount || 15000)}
+          className="btn-primary"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "12px 28px",
+            fontSize: "14px",
+            fontWeight: "700",
+            borderRadius: "12px",
+            boxShadow: "0 4px 18px rgba(2, 132, 199, 0.4)",
+            cursor: "pointer",
+          }}
+        >
+          {lang === "hi" ? "आय विवरण सहेजें और e-KYC पर आगे बढ़ें →" : lang === "gu" ? "આવક વિગતો સાચવો અને e-KYC પર આગળ વધો →" : "Save Income Details & Continue to e-KYC →"}
+        </button>
+      </div>
     </div>
   );
 }

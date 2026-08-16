@@ -1,0 +1,784 @@
+/* ==========================================================================
+   SAHAYATA AI — Earth Horizon Blue Atmospheric Background
+   Exact match to the Earth's rim glow:
+   - Atmospheric Specular Blue: #4ba3e3, #38bdf8, #29b6f6
+   - Space Deep Foundation: #070f1e, #050a16, #02050b
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: #040914;
+  color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fullscreen Page Root */
+.bolt-ai-page-root {
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #040914;
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* EXACT EARTH ATMOSPHERIC HORIZON BLUE BACKGROUND LAYERS */
+
+/* Layer 1: Earth Horizon Atmosphere Gradient & Flares */
+.bolt-bg-aura {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: 
+    /* Top Right Earth Atmosphere Specular Horizon Glow (#4ba3e3 / #38bdf8) */
+    radial-gradient(ellipse 75% 65% at 85% 10%, rgba(255, 255, 255, 0.85) 0%, rgba(75, 163, 227, 0.65) 20%, rgba(41, 182, 246, 0.35) 45%, transparent 75%),
+    /* Top Left & Center Earth Atmospheric Blue Aura (#29b6f6 / #0284c7) */
+    radial-gradient(ellipse 90% 75% at 25% 25%, rgba(56, 189, 248, 0.85) 0%, rgba(2, 132, 199, 0.7) 35%, rgba(7, 15, 30, 0.95) 75%),
+    /* Deep Space Midnight Foundation */
+    linear-gradient(180deg, #070f1e 0%, #050a16 60%, #02050b 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Layer 2: Interactive Cursor Glow Light */
+.bolt-cursor-glow {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(75, 163, 227, 0.16) 0%, rgba(56, 189, 248, 0.06) 45%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  transition: opacity 0.3s ease;
+  filter: blur(40px);
+}
+
+/* Layer 3: Vertical Soft Stage Rays */
+.bolt-stage-rays {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 50px,
+    rgba(255, 255, 255, 0.016) 50px,
+    rgba(255, 255, 255, 0.016) 100px
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Layer 4: Ambient Floating Particle Orbs (Earth Atmosphere Blue) */
+.bolt-particle-1 {
+  position: fixed;
+  top: 25%;
+  left: 15%;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(75, 163, 227, 0.25) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 2;
+  animation: floatOrb 14s infinite ease-in-out;
+}
+
+.bolt-particle-2 {
+  position: fixed;
+  top: 45%;
+  right: 18%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.24) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 2;
+  animation: floatOrb 18s infinite ease-in-out reverse;
+}
+
+@keyframes floatOrb {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-30px) scale(1.08); }
+}
+
+/* Layer 5: Bottom Dark Space Vignette Shadow */
+.bolt-vignette-shadow {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 38vh;
+  background: linear-gradient(180deg, transparent 0%, rgba(4, 9, 20, 0.88) 65%, #02050b 100%);
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* Top Floating Exit Button */
+.bolt-exit-floating-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.bolt-exit-floating-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+/* Central Hero Viewport */
+.bolt-hero-content {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px 40px 24px;
+}
+
+.bolt-main-title {
+  font-size: 58px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 14px 0;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .bolt-main-title {
+    font-size: 38px;
+  }
+}
+
+.bolt-sub-title {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 36px 0;
+  font-weight: 400;
+  max-width: 620px;
+}
+
+/* Central Dark Input Box (#18181b / rounded-3xl) */
+.bolt-input-card {
+  max-width: 740px;
+  width: 100%;
+  background: rgba(24, 24, 27, 0.96);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 22px 26px 18px 26px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+  text-align: left;
+  margin-bottom: 40px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bolt-input-card:focus-within {
+  border-color: rgba(75, 163, 227, 0.6);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.75), 0 0 30px rgba(75, 163, 227, 0.3);
+}
+
+/* Active State: Compact & Sleek Input Card when Chat History is Active */
+.bolt-input-card.bolt-input-card-active {
+  padding: 14px 20px 12px 20px;
+  margin-bottom: 20px;
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  border-color: rgba(56, 189, 248, 0.3);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bolt-input-card.bolt-input-card-active .bolt-textarea {
+  min-height: 38px;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+/* WHATSAPP STYLE TYPING BUBBLE & DOTS ANIMATION */
+.sai-typing-container {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.sai-avatar-bubble {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.sai-typing-bubble {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(24, 24, 27, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px 18px 18px 4px;
+  padding: 12px 18px;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+}
+
+.sai-typing-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sai-typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38bdf8;
+  animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.sai-typing-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.sai-typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.sai-typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typingBounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1.15);
+    opacity: 1;
+    background: #60a5fa;
+  }
+}
+
+.bolt-textarea {
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+  caret-color: #38bdf8 !important;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  resize: none;
+  min-height: 72px;
+  margin-bottom: 16px;
+  padding: 0 !important;
+  position: relative;
+  z-index: 10;
+  opacity: 1 !important;
+}
+
+.bolt-textarea:focus {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+}
+
+.bolt-textarea::placeholder {
+  color: #94a3b8 !important;
+  opacity: 0.75 !important;
+}
+
+.bolt-input-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bolt-controls-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.bolt-plus-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bolt-plus-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
+}
+
+.bolt-dropdown-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #a1a1aa;
+  font-size: 13px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.bolt-dropdown-chip:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.bolt-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.bolt-plan-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #a1a1aa;
+  font-size: 13px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.bolt-plan-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.bolt-send-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4ba3e3 0%, #38bdf8 100%);
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 16px rgba(75, 163, 227, 0.5);
+}
+
+.bolt-send-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(75, 163, 227, 0.7);
+}
+
+/* 4 Squircle Action Cards */
+.bolt-squircles-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 600px) {
+  .bolt-squircles-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+.bolt-squircle-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.bolt-squircle-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bolt-squircle-item:hover .bolt-squircle-box {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
+}
+
+.bolt-badge-new {
+  position: absolute;
+  top: -6px;
+  background: #38bdf8;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.bolt-squircle-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Bottom "or start from" Row */
+.bolt-start-from-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.bolt-pill-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bolt-pill-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Dynamic AI Output Result Panel */
+.bolt-ai-result-panel {
+  max-width: 740px;
+  width: 100%;
+  margin-top: 28px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(75, 163, 227, 0.4);
+  border-radius: 20px;
+  padding: 24px;
+  text-align: left;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================================================
+   THREAD SAAS TEMPLATE ENHANCEMENTS — DARK ATMOSPHERIC AI SPACE THEME
+   ========================================================================== */
+
+/* Thread Metrics Strip Banner (Deep Midnight Space #07090e) */
+.sai-metrics-strip {
+  background: rgba(7, 9, 14, 0.85);
+  border-top: 1px solid rgba(99, 102, 241, 0.2);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+  backdrop-filter: blur(16px);
+  padding: 16px 24px;
+  margin: 30px 0 0 0;
+  width: 100%;
+}
+
+.sai-metrics-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.sai-metric-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sai-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 12px #34d399;
+  animation: pulseGlow 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.5; }
+}
+
+.sai-metric-label {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.sai-metric-val {
+  font-size: 14px;
+  color: #a5b4fc;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.sai-metric-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Features Section Root Container (Dark Space Theme) */
+.sai-features-section {
+  background: #040914;
+  padding: 60px 24px 80px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sai-features-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 40px auto;
+}
+
+.sai-features-title {
+  color: #ffffff !important;
+  font-size: 34px;
+  font-weight: 800;
+  margin: 12px 0;
+  letter-spacing: -0.02em;
+}
+
+.sai-features-sub {
+  color: #94a3b8 !important;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Features Header Badge */
+.sai-features-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(99, 102, 241, 0.18);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: #c7d2fe;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 999px;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+
+/* Thread Interactive Tab Controller */
+.sai-tab-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+  margin-bottom: 36px;
+}
+
+.sai-tab-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a1a1aa;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.sai-tab-btn:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.45);
+  color: #ffffff;
+}
+
+.sai-tab-btn.active {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.45);
+}
+
+/* Dark Glass Cards (AI Sahayak Dark Glass) */
+.sai-card {
+  position: relative;
+  background: rgba(19, 27, 46, 0.75);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sai-card-beam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #6366f1, #a5b4fc, transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.sai-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(99, 102, 241, 0.2);
+}
+
+.sai-card:hover .sai-card-beam {
+  transform: translateX(100%);
+}
+
+.sai-card.sai-card-highlighted {
+  border-color: rgba(99, 102, 241, 0.75);
+  box-shadow: 0 0 35px rgba(99, 102, 241, 0.35);
+  background: rgba(19, 27, 46, 0.92);
+}
+
+.sai-card-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a5b4fc;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.sai-card:hover .sai-card-icon {
+  transform: scale(1.1) rotate(3deg);
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #ffffff;
+}
+
+.sai-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.02em;
+}
+
+.sai-card-desc {
+  font-size: 14px;
+  color: #94a3b8 !important;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.sai-card-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #a5b4fc !important;
+  transition: gap 0.2s ease, color 0.2s ease;
+}
+
+.sai-card:hover .sai-card-action {
+  gap: 10px;
+  color: #818cf8 !important;
+}
+
+
+
+

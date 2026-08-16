@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
+import { Sparkles, ShieldAlert, Lightbulb, Calendar } from "lucide-react";
 import { getRepaymentPlans } from "../api";
-import SpeechButton from "./SpeechButton";
 
 const IconCalendar = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
@@ -22,7 +22,7 @@ export default function SachetPlanner({ loanAmount = 90000, lang = "en" }) {
         dailyFixed: "Daily Fixed",
         flexibleEdi: "Flexible EDI",
         monthlyEmi: "Monthly EMI",
-        smartTip: "Weekends par deduction thodi zyada, slow days par kam.",
+        smartTip: "Higher deductions on peak sales days, lower on slow days.",
       },
       hi: {
         title: "सचेत पुनर्भुगतान योजनाकार",
@@ -147,33 +147,137 @@ export default function SachetPlanner({ loanAmount = 90000, lang = "en" }) {
   }, [loanAmount, lang, t]);
 
   const plan = plans?.[mode];
+  const numLoan = typeof loanAmount === "object" ? (loanAmount?.amount || loanAmount?.eligible_limit || 15000) : (Number(loanAmount) || 15000);
 
   return (
-    <div className="card card-accent-green">
-      <div className="eyebrow">Interactive Suite</div>
-      <div className="card-title" style={{ display: "flex", alignItems: "center", gap: 7 }}>
-        <IconCalendar /> {t("title")}
-        <SpeechButton text={`${t("title")}. ${t("loan")} ${loanAmount} rupees. ${plans?.recommended_mode === "daily_flexible" ? t("mlRecommend") : ""}`} lang={lang} />
-      </div>
-      <div className="card-sub">
-        {t("loan")}: <strong>₹{loanAmount.toLocaleString("en-IN")}</strong>
-        {plans?.recommended_mode === "daily_flexible" && t("mlRecommend")}
+    <div className="sachet-planner-inner" style={{ color: "#f8fafc" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+        <span style={{ background: "rgba(16, 185, 129, 0.15)", color: "#34d399", padding: "3px 10px", borderRadius: "999px", fontSize: "11px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+          Micro-Repayment Model
+        </span>
+        <span style={{ fontSize: "12px", color: "#94a3b8" }}>
+          {t("loan")}: <strong style={{ color: "#38bdf8" }}>₹{numLoan.toLocaleString("en-IN")}</strong>
+        </span>
       </div>
 
-      <div className="plan-toggle">
-        <button className={`plan-btn${mode === "daily_fixed" ? " active" : ""}`} onClick={() => setMode("daily_fixed")}>{t("dailyFixed")}</button>
-        <button className={`plan-btn${mode === "daily_flexible" ? " active" : ""}`} onClick={() => setMode("daily_flexible")}>{t("flexibleEdi")}</button>
-        <button className={`plan-btn${mode === "monthly" ? " active" : ""}`} onClick={() => setMode("monthly")}>{t("monthlyEmi")}</button>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+        <IconCalendar />
+        <h4 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: "#f8fafc" }}>
+          {t("title")}
+        </h4>
       </div>
+      <p style={{ margin: "0 0 16px 0", fontSize: "12.5px", color: "#94a3b8" }}>
+        {plans?.recommended_mode === "daily_flexible" ? `AI Recommended: Flexible EDI dynamically matches peak sales velocity.` : `Select your preferred automatic repayment frequency.`}
+      </p>
+
+      {/* Plan Switcher Pills */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "8px",
+          marginBottom: "16px",
+          background: "rgba(15, 23, 42, 0.6)",
+          padding: "4px",
+          borderRadius: "12px",
+          border: "1px solid rgba(255, 255, 255, 0.08)",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setMode("daily_fixed")}
+          style={{
+            padding: "8px 4px",
+            fontSize: "12px",
+            fontWeight: "700",
+            borderRadius: "8px",
+            border: "none",
+            background: mode === "daily_fixed" ? "linear-gradient(135deg, #0284c7, #38bdf8)" : "transparent",
+            color: mode === "daily_fixed" ? "#ffffff" : "#94a3b8",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+        >
+          {t("dailyFixed")}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setMode("daily_flexible")}
+          style={{
+            padding: "8px 4px",
+            fontSize: "12px",
+            fontWeight: "700",
+            borderRadius: "8px",
+            border: "none",
+            background: mode === "daily_flexible" ? "linear-gradient(135deg, #059669, #34d399)" : "transparent",
+            color: mode === "daily_flexible" ? "#0f172a" : "#94a3b8",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "4px",
+          }}
+        >
+          <span>{t("flexibleEdi")}</span>
+          <Sparkles size={13} color={mode === "daily_flexible" ? "#0f172a" : "#34d399"} />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setMode("monthly")}
+          style={{
+            padding: "8px 4px",
+            fontSize: "12px",
+            fontWeight: "700",
+            borderRadius: "8px",
+            border: "none",
+            background: mode === "monthly" ? "linear-gradient(135deg, #7c3aed, #a855f7)" : "transparent",
+            color: mode === "monthly" ? "#ffffff" : "#94a3b8",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+        >
+          {t("monthlyEmi")}
+        </button>
+      </div>
+
+      {/* Plan Preview Result */}
       {plan && (
-        <div className="plan-preview">
-          <div className="amount">{plan.amount.replace("INR", "₹")}</div>
-          <div className="desc">{translateDesc(plan.desc)}</div>
-          <div className="plan-note">{translateDeductionRule(plan.deduction_rule)}</div>
-          {plan.retry_policy && <div className="plan-note">{translateRetryPolicy(plan.retry_policy)}</div>}
-          {plan.bounce_penalty && <div className="plan-note">{translateBouncePenalty(plan.bounce_penalty)}</div>}
+        <div
+          style={{
+            background: "rgba(15, 23, 42, 0.8)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            borderRadius: "14px",
+            padding: "16px",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "6px" }}>
+            <span style={{ fontSize: "22px", fontWeight: "900", color: "#34d399" }}>
+              {plan.amount.replace("INR", "₹")}
+            </span>
+            <span style={{ fontSize: "11.5px", color: "#38bdf8", fontWeight: "700" }}>
+              {plan.deduction_rule ? translateDeductionRule(plan.deduction_rule) : ""}
+            </span>
+          </div>
+
+          <p style={{ fontSize: "12.5px", color: "#cbd5e1", margin: "0 0 10px 0", lineHeight: "1.4" }}>
+            {translateDesc(plan.desc)}
+          </p>
+
+          {plan.bounce_penalty && (
+            <div style={{ fontSize: "11px", color: "#94a3b8", background: "rgba(255, 255, 255, 0.03)", padding: "6px 10px", borderRadius: "6px", marginBottom: "6px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <ShieldAlert size={14} color="#f59e0b" />
+              <span>{translateBouncePenalty(plan.bounce_penalty)}</span>
+            </div>
+          )}
+
           {plans?.smart_tip && mode === "daily_flexible" && (
-            <div className="plan-note plan-tip">{translateSmartTip(plans.smart_tip)}</div>
+            <div style={{ fontSize: "11.5px", color: "#a7f3d0", background: "rgba(16, 185, 129, 0.1)", border: "1px solid rgba(16, 185, 129, 0.25)", padding: "8px 12px", borderRadius: "8px", display: "flex", alignItems: "flex-start", gap: "7px" }}>
+              <Lightbulb size={15} color="#34d399" style={{ flexShrink: 0, marginTop: "1px" }} />
+              <span>{translateSmartTip(plans.smart_tip)}</span>
+            </div>
           )}
         </div>
       )}

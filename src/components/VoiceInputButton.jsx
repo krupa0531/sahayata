@@ -189,30 +189,30 @@ export default function VoiceInputButton({ onTranscript, lang = "en", type = "te
         height: "36px",
         borderRadius: "50%",
         border: "none",
-        background: listening ? "rgba(239, 68, 68, 0.25)" : "rgba(255, 255, 255, 0.05)",
-        color: listening ? "#f87171" : "rgba(255, 255, 255, 0.6)",
+        background: listening ? "rgba(239, 68, 68, 0.25)" : "rgba(2, 132, 199, 0.12)",
+        color: listening ? "#f87171" : "#38bdf8",
         cursor: "pointer",
         transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-        boxShadow: listening ? "0 0 15px rgba(239, 68, 68, 0.4)" : "none",
+        boxShadow: listening ? "0 0 15px rgba(239, 68, 68, 0.4)" : "0 2px 8px rgba(2, 132, 199, 0.15)",
         borderWidth: "1px",
         borderStyle: "solid",
-        borderColor: listening ? "#ef4444" : "rgba(255, 255, 255, 0.15)",
+        borderColor: listening ? "#ef4444" : "rgba(56, 189, 248, 0.35)",
         flexShrink: 0,
         marginLeft: "8px",
       }}
       onMouseEnter={(e) => {
         if (!listening) {
-          e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
-          e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.3)";
+          e.currentTarget.style.background = "rgba(2, 132, 199, 0.25)";
+          e.currentTarget.style.borderColor = "#38bdf8";
           e.currentTarget.style.color = "#ffffff";
           e.currentTarget.style.transform = "scale(1.08)";
         }
       }}
       onMouseLeave={(e) => {
         if (!listening) {
-          e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
-          e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.15)";
-          e.currentTarget.style.color = "rgba(255, 255, 255, 0.6)";
+          e.currentTarget.style.background = "rgba(2, 132, 199, 0.12)";
+          e.currentTarget.style.borderColor = "rgba(56, 189, 248, 0.35)";
+          e.currentTarget.style.color = "#38bdf8";
           e.currentTarget.style.transform = "scale(1)";
         }
       }}

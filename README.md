@@ -1,29 +1,23 @@
-# Sahayata Frontend
+# Sahayata
 
-React + Vite frontend for the Sahayata worker-support portal.
+Sahayata is a financial-support portal for gig workers, delivery partners, street vendors, farmers, and daily-wage earners. It presents scheme discovery, eligibility checks, loan planning, KYC, application tracking, and a UPI-informed credit view in one guided journey.
 
 ## Run locally
 
-Open two terminals:
+Open two terminals from this project folder:
 
 ```bash
-# Terminal 1: from sahayata-app
+# Terminal 1 — starts the local FastAPI backend on http://127.0.0.1:8010
 npm run backend
 
-# Terminal 2: from sahayata-app
+# Terminal 2 — starts the Vite frontend
 npm run dev
 ```
 
-`npm run backend` starts the canonical API in `../backend`, including the real male voice service. Do not start the legacy `sahayata-app/backend/main.py` directly.
+Then open the local URL displayed by Vite, normally `http://localhost:5173`.
 
-## Loan voice guide
+The frontend proxies `/api` and `/health` calls to the local backend. If the backend terminal is not running, Vite will show `ECONNREFUSED`; start `npm run backend` to resolve it.
 
-The bottom-right voice assistant has English, Hindi, and Gujarati buttons. Each calls:
+## Voice guide
 
-```
-/api/voice-assistant/loan-guidance/audio?language=en|hi|gu
-```
-
-It streams a free Indian male neural voice. A user may also say "loan", "credit", or "mujhe loan" after pressing the microphone. Voice input needs Chrome or Edge and microphone permission.
-
-The assistant never asks a user to share an OTP. Any OTP must be entered by the user only on the official website.
+The bottom-right voice assistant supports English, Hindi, and Gujarati guidance. It never asks a user to share an OTP; OTPs should only be entered by the user on an official service page.

@@ -4,7 +4,7 @@
 :root {
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
-  /* Professional navy palette with restrained India-inspired accents */
+  /* Deep Space Universe & Earth Theme */
   --bg-app: #070b16;
   --bg-surface: rgba(14, 24, 44, 0.72);
   --bg-surface-hover: rgba(24, 39, 68, 0.84);
@@ -104,4 +104,43 @@ input, select, textarea {
 @keyframes marquee {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
+}
+
+/* Speech Button Styling */
+.speech-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #60a5fa;
+  -webkit-text-fill-color: initial;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+.speech-btn:hover {
+  background: rgba(59, 130, 246, 0.16);
+  border-color: rgba(59, 130, 246, 0.45);
+  color: #93c5fd;
+  transform: scale(1.03);
+}
+
+.speech-btn.speaking {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  animation: pulse 1.5s infinite;
+}
+
+.speech-btn.speaking:hover {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
 }

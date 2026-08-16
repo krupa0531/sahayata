@@ -1,7 +1,7 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+const API_BASE = (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) || "/api";
 const TOKEN_KEY = "sahayata_token";
 
-function getToken() {
+export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
 }
 
@@ -25,6 +25,12 @@ async function request(path, options = {}) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     const detail = err.detail;
+
+    // Auto log out on 401 Unauthorized errors (expired / invalid token)
+    if (res.status === 401) {
+      logoutUser();
+    }
+
     throw new Error(
       typeof detail === "string" ? detail : Array.isArray(detail) ? detail[0]?.msg : `Request failed: ${res.status}`
     );
@@ -179,3 +185,73 @@ export async function getPageSpeechAudio(text, language = "hi") {
   if (!response.ok) throw new Error("Unable to generate speech");
   return URL.createObjectURL(await response.blob());
 }
+
+export function uploadUpiStatement(profileId, file) {
+  const body = new FormData();
+  body.append("profile_id", profileId);
+  body.append("file", file);
+  return request("/credit/upload-statement", { method: "POST", body });
+}
+
+export function fetchUpiHistory(identifier, mode = "auto") {
+  return request("/v1/fetch-history", {
+    method: "POST",
+    body: JSON.stringify({
+      identifier,
+      upi_id: identifier,
+      pan_number: identifier,
+      mode,
+    }),
+  });
+}
+
+export function evaluateWorkerSchemes(payload) {
+  return request("/ai/assistant/evaluate-schemes", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function recordAiConversationSessionApi(payload) {
+  return request("/ai/conversations/session", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  }).catch((err) => {
+    console.warn("Backend conversation sync fallback:", err);
+    return null;
+  });
+}
+
+export function getAiConversationsStatsApi() {
+  return request("/ai/conversations/stats").catch((err) => {
+    console.warn("Backend conversation stats fallback:", err);
+    return null;
+  });
+}
+
+export function queryRagApi(question, language = "en") {
+  return request("/rag/query", {
+    method: "POST",
+    body: JSON.stringify({ question, language }),
+  }).catch((err) => {
+    console.warn("Backend RAG sync fallback:", err);
+    return null;
+  });
+}
+
+export function getAdminWorkersApi() {
+  return request("/admin/workers").catch((err) => {
+    console.warn("Backend admin workers fallback:", err);
+    return [];
+  });
+}
+
+export function getAdminStatsApi() {
+  return request("/admin/stats").catch((err) => {
+    console.warn("Backend admin stats fallback:", err);
+    return null;
+  });
+}
+
+
+
