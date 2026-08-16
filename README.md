@@ -14,7 +14,11 @@ npm run backend
 npm run dev
 ```
 
+<<<<<<< HEAD
 Then open the local URL displayed by Vite, normally `http://localhost:5173`.
+=======
+`npm run backend` starts the canonical API in `../backend`, including the real male voice service. Do not start the legacy `sahayata-app/backend/run.py` directly.
+>>>>>>> d95276c0fe6d1df0397f011981e762566f185559
 
 The frontend proxies `/api` and `/health` calls to the local backend. If the backend terminal is not running, Vite will show `ECONNREFUSED`; start `npm run backend` to resolve it.
 
