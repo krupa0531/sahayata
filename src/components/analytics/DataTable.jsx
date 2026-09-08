@@ -47,204 +47,7 @@ import domesticWorkerPhoto from '../../assets/domestic-worker-india.jpg';
 import streetVendorPhoto from '../../assets/street-vendor-india.jpg';
 import constructionWorkerPhoto from '../../assets/construction-worker-india.jpg';
 
-const WORKER_PROFILES = [
-  {
-    id: 'SAH-9021',
-    name: 'Ramesh Kumar',
-    photo: deliveryRiderPhoto,
-    occupation: 'Delivery Executive (Zomato)',
-    category: 'Delivery Partners',
-    phone: '+91 98201 48920',
-    aadhaar: 'XXXX-XXXX-4819',
-    city: 'Mumbai',
-    state: 'Maharashtra',
-    dailyEarning: 850,
-    dailyExpense: 350,
-    dailyBuffer: 500,
-    monthlyIncome: 22500,
-    previousIncome: 8000,
-    incomeGrowth: '+181%',
-    schemes: ['PM-SYM Pension', 'PM SVANidhi'],
-    loanStatus: 'Under Review (₹15,000)',
-    loanAmount: 15000,
-    ediRepayment: '₹50/day',
-    insurance: 'PMJJBY Active',
-    training: 'EV Fleet Certified',
-    riskScore: 8,
-    trustScore: 96,
-    verification: 'VERIFIED',
-    lastActive: '10 mins ago',
-    timeline: [
-      { date: '12 July 2026', time: '10:30 AM', title: 'Registered on Sahayata Platform', status: 'Completed', icon: CheckCircle2 },
-      { date: '12 July 2026', time: '10:32 AM', title: 'e-KYC Aadhaar & PAN Verified', status: 'Completed', icon: ShieldCheck },
-      { date: '14 July 2026', time: '02:15 PM', title: 'PM SVANidhi Scheme Recommended by AI', status: 'Completed', icon: Sparkles },
-      { date: '16 July 2026', time: '11:00 AM', title: '₹15,000 Sachet Micro-Loan Approved', status: 'Completed', icon: HandCoins },
-      { date: '20 July 2026', time: '04:45 PM', title: 'EV Fleet Operations Certification Completed', status: 'Completed', icon: GraduationCap },
-      { date: '25 July 2026', time: '09:00 AM', title: 'Monthly Income Increased to ₹22,500', status: 'Completed', icon: TrendingUp }
-    ],
-    aiScores: {
-      financialInclusion: 94,
-      employmentReadiness: 92,
-      digitalLiteracy: 88,
-      schemeEligibility: 98,
-      incomeStability: 90,
-      insuranceCoverage: 95
-    },
-    recommendations: [
-      'Eligible for PM SVANidhi 7% Interest Subsidy Tranche-2 (₹25,000)',
-      'Recommend EV Fleet Operations Master Training',
-      'Eligible for Commercial Two-Wheeler EV Co-Lending Loan'
-    ],
-    documents: [
-      { name: 'Aadhaar_Card_Verified.pdf', status: 'VERIFIED', size: '420 KB' },
-      { name: 'Zomato_Payout_Statement_90d.pdf', status: 'VERIFIED', size: '1,120 KB' },
-      { name: 'EV_Fleet_Certification_2026.pdf', status: 'VERIFIED', size: '680 KB' }
-    ]
-  },
-  {
-    id: 'SAH-9022',
-    name: 'Sunita Devi',
-    photo: domesticWorkerPhoto,
-    occupation: 'Domestic Worker & Artisan',
-    category: 'Domestic Workers',
-    phone: '+91 94150 91820',
-    aadhaar: 'XXXX-XXXX-1920',
-    city: 'Lucknow',
-    state: 'Uttar Pradesh',
-    dailyEarning: 550,
-    dailyExpense: 200,
-    dailyBuffer: 350,
-    monthlyIncome: 14000,
-    previousIncome: 5000,
-    incomeGrowth: '+180%',
-    schemes: ['e-SHRAM', 'PMSBY Insurance'],
-    loanStatus: 'Under Review (₹10,000)',
-    loanAmount: 10000,
-    ediRepayment: '₹35/day',
-    insurance: 'PMSBY Active',
-    training: 'Handicraft Upskilling',
-    riskScore: 12,
-    trustScore: 92,
-    verification: 'VERIFIED',
-    lastActive: '25 mins ago',
-    timeline: [
-      { date: '05 July 2026', time: '09:00 AM', title: 'Registered via Field Worker Onboarding App', status: 'Completed', icon: CheckCircle2 },
-      { date: '06 July 2026', time: '11:20 AM', title: 'e-SHRAM National UAN Linked', status: 'Completed', icon: ShieldCheck },
-      { date: '18 July 2026', time: '03:10 PM', title: 'Handicraft Upskilling Course Enrolled', status: 'Completed', icon: GraduationCap }
-    ],
-    aiScores: {
-      financialInclusion: 82,
-      employmentReadiness: 85,
-      digitalLiteracy: 74,
-      schemeEligibility: 96,
-      incomeStability: 80,
-      insuranceCoverage: 90
-    },
-    recommendations: [
-      'Recommend e-SHRAM Artisans Micro-Credit Sachet (₹10,000)',
-      'Recommend Digital Banking & UPI QR Literacy Course'
-    ],
-    documents: [
-      { name: 'eSHRAM_National_Card.pdf', status: 'VERIFIED', size: '380 KB' },
-      { name: 'PAN_Card_Verification.pdf', status: 'VERIFIED', size: '510 KB' }
-    ]
-  },
-  {
-    id: 'SAH-9023',
-    name: 'Kantilal Patel',
-    photo: streetVendorPhoto,
-    occupation: 'Vegetable Vendor (Push Cart)',
-    category: 'Street Vendors',
-    phone: '+91 97230 55190',
-    aadhaar: 'XXXX-XXXX-8921',
-    city: 'Ahmedabad',
-    state: 'Gujarat',
-    dailyEarning: 900,
-    dailyExpense: 400,
-    dailyBuffer: 500,
-    monthlyIncome: 23400,
-    previousIncome: 9000,
-    incomeGrowth: '+160%',
-    schemes: ['PM SVANidhi (₹20,000)', 'Jan Dhan Yojana'],
-    loanStatus: 'Under Review (₹20,000)',
-    loanAmount: 20000,
-    ediRepayment: '₹65/day',
-    insurance: 'PMJJBY Active',
-    training: 'UPI Merchant Certified',
-    riskScore: 6,
-    trustScore: 98,
-    verification: 'VERIFIED',
-    lastActive: '1 hour ago',
-    timeline: [
-      { date: '01 July 2026', time: '08:00 AM', title: 'QR Code Soundbox Activated', status: 'Completed', icon: CheckCircle2 },
-      { date: '03 July 2026', time: '10:00 AM', title: 'PM SVANidhi Tranche 1 Repaid 100%', status: 'Completed', icon: HandCoins },
-      { date: '15 July 2026', time: '04:00 PM', title: 'Tranche 2 ₹20,000 Applied', status: 'Completed', icon: TrendingUp }
-    ],
-    aiScores: {
-      financialInclusion: 98,
-      employmentReadiness: 94,
-      digitalLiteracy: 92,
-      schemeEligibility: 99,
-      incomeStability: 96,
-      insuranceCoverage: 94
-    },
-    recommendations: [
-      'Fast-track PM SVANidhi Tranche-3 (₹50,000) Approval',
-      'Recommend Solar Powered Cold-Storage Cart Loan'
-    ],
-    documents: [
-      { name: 'SVANidhi_LOR_Certificate.pdf', status: 'VERIFIED', size: '390 KB' },
-      { name: 'Vending_Zone_ID_Card.pdf', status: 'VERIFIED', size: '460 KB' }
-    ]
-  },
-  {
-    id: 'SAH-9024',
-    name: 'Vikram Singh',
-    photo: constructionWorkerPhoto,
-    occupation: 'Construction Site Supervisor',
-    category: 'Construction Workers',
-    phone: '+91 98112 04910',
-    aadhaar: 'XXXX-XXXX-9102',
-    city: 'Delhi NCR',
-    state: 'Delhi',
-    dailyEarning: 750,
-    dailyExpense: 300,
-    dailyBuffer: 450,
-    monthlyIncome: 19500,
-    previousIncome: 7500,
-    incomeGrowth: '+160%',
-    schemes: ['BOCW Welfare', 'PMJJBY'],
-    loanStatus: 'Under Review (₹20,000)',
-    loanAmount: 20000,
-    ediRepayment: '₹65/day',
-    insurance: 'PMJJBY Active',
-    training: 'Safety Certification',
-    riskScore: 10,
-    trustScore: 94,
-    verification: 'VERIFIED',
-    lastActive: '3 hours ago',
-    timeline: [
-      { date: '10 July 2026', time: '09:30 AM', title: 'Registered via Construction Welfare Pass', status: 'Completed', icon: CheckCircle2 },
-      { date: '15 July 2026', time: '02:00 PM', title: 'BOCW Welfare Grant Disbursed', status: 'Completed', icon: HandCoins }
-    ],
-    aiScores: {
-      financialInclusion: 88,
-      employmentReadiness: 90,
-      digitalLiteracy: 82,
-      schemeEligibility: 95,
-      incomeStability: 86,
-      insuranceCoverage: 92
-    },
-    recommendations: [
-      'Recommend Heavy Equipment Operation Upskilling',
-      'Recommend BOCW Accident Protection Insurance'
-    ],
-    documents: [
-      { name: 'BOCW_Registration_Card.pdf', status: 'VERIFIED', size: '540 KB' },
-      { name: 'Aadhaar_Verification_Doc.pdf', status: 'VERIFIED', size: '410 KB' }
-    ]
-  }
-];
+const WORKER_PROFILES = [];
 
 export default function DataTable({ searchQuery = '' }) {
   const [analyticsState, setAnalyticsState] = useState(() => getAnalyticsState());
@@ -452,7 +255,7 @@ export default function DataTable({ searchQuery = '' }) {
           </strong>
           <span style={{ fontSize: '0.74rem', color: '#059669', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
             <CheckCircle2 size={12} />
-            <span>100% Aadhaar & CKYC Matched</span>
+            <span>{mergedWorkers.length === 0 ? '0% Aadhaar & CKYC Matched' : '100% Aadhaar & CKYC Matched'}</span>
           </span>
         </div>
 
@@ -462,9 +265,11 @@ export default function DataTable({ searchQuery = '' }) {
             <TrendingUp size={18} color="#0284C7" />
           </div>
           <strong style={{ fontSize: '1.5rem', color: '#0284C7', display: 'block', margin: '4px 0' }}>
-            ₹{Math.round(mergedWorkers.reduce((acc, w) => acc + (w.dailyBuffer || 450), 0) / Math.max(1, mergedWorkers.length))} / day
+            ₹{mergedWorkers.length === 0 ? 0 : Math.round(mergedWorkers.reduce((acc, w) => acc + (w.dailyBuffer || 0), 0) / mergedWorkers.length)} / day
           </strong>
-          <span style={{ fontSize: '0.74rem', color: '#059669', fontWeight: 700 }}>+160.7% Avg Income Growth</span>
+          <span style={{ fontSize: '0.74rem', color: '#059669', fontWeight: 700 }}>
+            {mergedWorkers.length === 0 ? '0% Avg Income Growth' : '+160.7% Avg Income Growth'}
+          </span>
         </div>
 
         <div style={{ background: '#FFFFFF', padding: '16px 18px', borderRadius: '12px', border: '1px solid #E2E8F0', borderTop: '3px solid #059669', boxShadow: '0 2px 8px rgba(15, 23, 42, 0.03)' }}>
@@ -476,7 +281,7 @@ export default function DataTable({ searchQuery = '' }) {
             {mergedWorkers.length} Workers
           </strong>
           <span style={{ fontSize: '0.74rem', color: '#059669', fontWeight: 700 }}>
-            100% Identity Authenticated
+            {mergedWorkers.length === 0 ? '0% Identity Authenticated' : '100% Identity Authenticated'}
           </span>
         </div>
 
@@ -485,7 +290,9 @@ export default function DataTable({ searchQuery = '' }) {
             <span>AI TRUST & RISK HEALTH</span>
             <ShieldCheck size={18} color="#4F46E5" />
           </div>
-          <strong style={{ fontSize: '1.5rem', color: '#4F46E5', display: 'block', margin: '4px 0' }}>95.0 / 100</strong>
+          <strong style={{ fontSize: '1.5rem', color: '#4F46E5', display: 'block', margin: '4px 0' }}>
+            {mergedWorkers.length === 0 ? '0.0 / 100' : (mergedWorkers.reduce((acc, w) => acc + (w.trustScore || 95), 0) / mergedWorkers.length).toFixed(1) + ' / 100'}
+          </strong>
           <span style={{ fontSize: '0.74rem', color: '#059669', fontWeight: 700 }}>0% Fraud Flags Active</span>
         </div>
       </div>

@@ -117,7 +117,7 @@ export default function VoiceAssistant({
     }
 
     const currentAudioLang = detected.targetLang || lang;
-    const isNavigatingToAi = detected.intentKey === "GOVERNMENT_SCHEMES" || detected.intentKey === "AI_ASSISTANT";
+    const isNavigatingToAi = detected.intentKey === "GOVERNMENT_SCHEMES" || detected.intentKey === "AI_ASSISTANT" || detected.intentKey === "ELIGIBILITY_CHECK";
     if (isNavigatingToAi) {
       sessionStorage.setItem("sai_pending_speak_intent", detected.intentKey);
       sessionStorage.setItem("sai_pending_speak_text", detected.responseText);

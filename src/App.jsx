@@ -17,6 +17,7 @@ import {
   BrainCircuit,
   Menu,
   X,
+  AlertTriangle,
 } from "lucide-react";
 import "./App.css";
 import "./polish.css";
@@ -62,12 +63,6 @@ const FALLBACK_TICKER = [
   "Jan Dhan Khaton mein INR 2.3 lakh crore ki rashi jama",
 ];
 
-const ROADMAP = [
-  { phase: "Phase 1 - Foundation", title: "Identity and onboarding", items: ["e-Shram registration", "Jan Dhan account linkage", "e-KYC with geo-tagging"], delay: 0 },
-  { phase: "Phase 2 - Credit", title: "Alternate underwriting", items: ["UPI-based dynamic score", "NBFC co-lending partnerships", "Sachet repayment rails"], delay: 100 },
-  { phase: "Phase 3 - Security", title: "Long-term safety nets", items: ["PM-SYM pension adoption", "SVANidhi to commercial credit", "Digital literacy programmes"], delay: 200 },
-];
-
 export default function App() {
   const [stats, setStats] = useState(FALLBACK_STATS);
   const [ticker, setTicker] = useState(FALLBACK_TICKER);
@@ -84,6 +79,18 @@ export default function App() {
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [lang, setLang] = useState(() => getSavedLanguage());
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
+
+  // Listen to global sahayata_lang_change events for instant language switching across the entire app
+  useEffect(() => {
+    const handleLangChange = (e) => {
+      const newLang = typeof e.detail === "string" ? e.detail : (e.detail?.lang || e.detail);
+      if (newLang && ["en", "hi", "gu"].includes(newLang)) {
+        setLang(newLang);
+      }
+    };
+    window.addEventListener("sahayata_lang_change", handleLangChange);
+    return () => window.removeEventListener("sahayata_lang_change", handleLangChange);
+  }, []);
 
   // Load saved user and progress from localStorage on mount
   useEffect(() => {
@@ -106,7 +113,6 @@ export default function App() {
   const handleAuthSuccess = (authenticatedUser) => {
     setUser(authenticatedUser);
     setAuthMode(null);
-    // New registration or user session starts fresh at Step 1
     setJourneyStage(1);
     setActiveJourneyStep(1);
     setEligibleAmount(null);
@@ -166,23 +172,6 @@ export default function App() {
     return translate(key, lang, fallback);
   };
 
-  const handleEligibilityChange = (amount) => {
-    setEligibleAmount(amount);
-    setJourneyStage((current) => {
-      const next = Math.max(current, 2);
-      setActiveJourneyStep(next);
-      return next;
-    });
-  };
-
-  const handleApplicationSubmit = (appId) => {
-    setApplicationId(appId);
-    setJourneyStage(4);
-    setActiveJourneyStep(4);
-  };
-
-  const beginSupportJourney = () => setOnboardingOpen(true);
-
   const scrollTo = (id) => {
     const element = document.getElementById(id);
     if (element) element.scrollIntoView({ behavior: "smooth" });
@@ -190,42 +179,19 @@ export default function App() {
 
   const problemsList = [
     {
-      Icon: Banknote,
-      title: t("prob1Title", "Daily Income, Daily Expenses"),
-      desc: t("prob1Desc", "Gig and daily wage workers lack regular monthly salary cycles. Illness, weather disruptions, or slow sales days immediately impact traditional loan repayment."),
-    },
-    {
-      Icon: FileX2,
-      title: t("prob2Title", "Lack of Formal Documents"),
-      desc: t("prob2Desc", "Without salary slips, ITR tax filings, and formal employment contracts, informal workers fail traditional bank credit checks."),
-    },
-    {
-      Icon: Scale,
-      title: t("prob3Title", "High Processing Cost for Small Loans"),
-      desc: t("prob3Desc", "Processing a ₹10,000 micro-loan costs banks the same operational overhead as large loans, leading to routine neglect of micro-borrowers."),
-    },
-    {
       Icon: TrendingUp,
-      title: t("prob4Title", "No Collateral or CIBIL History"),
-      desc: t("prob4Desc", "Having no physical pledged assets and a 'New to Credit' 0 CIBIL score leads to automatic credit rejection by conventional banking algorithms."),
-    },
-  ];
-
-  const solutionsList = [
-    {
-      num: "01",
-      title: t("sol1Title", "Alternate Credit Scoring from UPI History"),
-      desc: t("sol1Desc", "Daily QR transaction velocity and cashflow patterns estimate actual net repayment capacity without CIBIL score."),
+      title: t("prob1Title", "1. Alternative Financial Data"),
+      desc: t("prob1Desc", "Digital lending systems increasingly analyse transaction behaviour to understand users without traditional financial documents."),
     },
     {
-      num: "02",
-      title: t("sol2Title", "Daily Sachet Micro-Repayments (EDI)"),
-      desc: t("sol2Desc", "Replaces burdensome monthly lump-sum EMIs with small daily ₹50–₹100 deductions aligned with daily cash cycles."),
+      Icon: AlertTriangle,
+      title: t("prob2Title", "2. Suspicious Transaction Patterns"),
+      desc: t("prob2Desc", "Abnormal or unusual transaction behaviour can affect the reliability of financial assessments."),
     },
     {
-      num: "03",
-      title: t("sol3Title", "Bank + FinTech Co-Lending Rails"),
-      desc: t("sol3Desc", "FinTech handles AI voice onboarding and forensic verification; public sector banks disburse low-risk subsidized capital."),
+      Icon: ShieldCheck,
+      title: t("prob3Title", "3. Unreliable Decisions"),
+      desc: t("prob3Desc", "If suspicious signals are not identified, financial assessment may require additional verification before a reliable decision can be made."),
     },
   ];
 
@@ -256,13 +222,6 @@ export default function App() {
     },
   ];
 
-  const journeySteps = [
-    { stepNum: 1, name: t("step1Name", "Check Eligibility") },
-    { stepNum: 2, name: t("step2Name", "Complete KYC") },
-    { stepNum: 3, name: t("step3Name", "Submit Application") },
-    { stepNum: 4, name: t("step4Name", "Track Status") },
-  ];
-
   return (
     <div className="app-root-shell">
       {/* GLOBAL NAVBAR (HIDDEN ON AI PAGE & BANK DASHBOARD) */}
@@ -277,7 +236,7 @@ export default function App() {
               </div>
               <div>
                 <div className="brand-title">{t("brandTitle", "Sahayata")}</div>
-                <div className="brand-sub">{t("brandSub", "Worker Financial Support Portal")}</div>
+                <div className="brand-sub">{t("brandSub", "AI Digital Lending Fraud Intelligence")}</div>
               </div>
             </div>
 
@@ -289,10 +248,10 @@ export default function App() {
                 {t("navHome", "Home")}
               </a>
               <a href="#" className={`nav-item ${currentPath === "/financial-twin" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); navigateTo("/financial-twin"); }}>
-                {t("navAi", "AI Assistant")}
+                {t("navAi", "AI Financial Twin")}
               </a>
-              <a href="#" className={`nav-item ${currentPath === "/about" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); navigateTo("/about"); }}>
-                {t("navAbout", "About Us")}
+              <a href="#how-it-works" className="nav-item" onClick={(e) => { e.preventDefault(); scrollTo("how-it-works"); }}>
+                {t("howItWorks", "How It Works")}
               </a>
               <a href="#" className={`nav-item ${currentPath === "/help" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); navigateTo("/help"); }}>
                 {t("navHelp", "Help")}
@@ -314,13 +273,12 @@ export default function App() {
                 </select>
               </div>
 
-              {/* BANK DASHBOARD BUTTON WITH BANK ICON */}
+              {/* WHITE LENDER COMMAND CENTER BUTTON */}
               <button
-                className="btn-white-sm"
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                className="btn-lender-white"
                 onClick={() => navigateTo("/admin")}
               >
-                <Landmark size={17} /> {t("navBank", "Bank Dashboard")}
+                <Landmark size={16} /> {t("navLender", "Lender Command Center")}
               </button>
 
               {/* REGISTER AND LOGIN BUTTONS */}
@@ -330,18 +288,18 @@ export default function App() {
                     Hi, {user.full_name || user.name || "User"}
                   </span>
                   <button
-                    className="btn-white-sm"
-                    style={{ padding: "6px 12px", fontSize: "12px", background: "rgba(239, 68, 68, 0.15)", color: "#fca5a5", border: "1px solid rgba(239, 68, 68, 0.3)", cursor: "pointer" }}
+                    className="btn-header-login"
+                    style={{ padding: "6px 12px", fontSize: "12px", background: "rgba(239, 68, 68, 0.15)", color: "#fca5a5", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "999px", cursor: "pointer" }}
                     onClick={handleLogout}
                   >
-                    {t("navLogout", "Logout")}
+                    Logout
                   </button>
                 </div>
               ) : (
-                <>
-                  <button className="btn-white-sm" onClick={() => setAuthMode("register")}>{t("navRegister", "Register")}</button>
-                  <button className="btn-white-sm" onClick={() => setAuthMode("login")}>{t("navLogin", "Login")}</button>
-                </>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <button className="btn-header-login" onClick={() => setAuthMode("login")}>{t("navLogin", "Login")}</button>
+                  <button className="btn-header-register" onClick={() => setAuthMode("register")}>{t("navRegister", "Register")}</button>
+                </div>
               )}
             </div>
           </div>
@@ -358,52 +316,51 @@ export default function App() {
       ) : currentPath === "/help" ? (
         <HelpCenter lang={lang} navigateTo={navigateTo} />
       ) : (
-        /* MAIN HOMEPAGE WITH PULSING INDIA EARTH GLOBE & WHITE-BLUE ATMOSPHERIC THEME */
+        /* MAIN HOMEPAGE WITH PULSING INDIA EARTH GLOBE & ATMOSPHERIC THEME */
         <main className="home-experience">
           {/* CINEMATIC HERO SECTION WITH INDIA EARTH PULSE GLOBE */}
           <section className="hero">
             <IndiaGlobeHero lang={lang} />
             <div className="hero-inner">
               <div className="hero-text">
-                <h2>
-                  {t("heroHeading")}
+                <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(56, 189, 248, 0.15)", border: "1px solid rgba(56, 189, 248, 0.3)", color: "#38bdf8", padding: "6px 16px", borderRadius: "999px", fontSize: "13px", fontWeight: "700", marginBottom: "16px" }}>
+                  <BrainCircuit size={16} /> {t("heroBadge", "AI-Powered Digital Transaction Security")}
+                </div>
+                <h2 style={{ fontSize: "38px", fontWeight: "800", lineHeight: "1.2", marginBottom: "16px" }}>
+                  {t("heroHeadingTitle1", "Trust Every Transaction.")}<br />{t("heroHeadingTitle2", "Detect Every Anomaly.")}
                 </h2>
-                <p>{t("heroSubtitle")}</p>
-                <div className="hero-btns">
-                  <button className="btn-primary" onClick={beginSupportJourney}>{t("btnApply")}</button>
-                  <button className="btn-ghost" onClick={() => scrollTo("application-journey")}>{t("btnCheck")}</button>
+                <p style={{ fontSize: "16px", color: "#a9b6ce", lineHeight: "1.6", marginBottom: "28px", maxWidth: "680px" }}>
+                  {t("heroSubtitle", "Sahayata uses AI to understand digital transaction behaviour, identify suspicious patterns and help make digital lending safer for both lenders and genuine users.")}
+                </p>
+                <div className="hero-btns" style={{ display: "flex", gap: "14px" }}>
+                  <button className="btn-primary" onClick={() => navigateTo("/financial-twin")}>{t("btnExploreAi", "Explore AI Behaviour Twin →")}</button>
+                  <button className="btn-ghost" onClick={() => scrollTo("how-it-works")}>{t("btnHowItWorks", "How Sahayata Works")}</button>
                 </div>
-                <div className="hero-trust">
-                  <span><ShieldCheck size={17} /> {t("trustEkyc")}</span>
-                  <span><Banknote size={17} /> {t("trustSachet")}</span>
-                  <span><BriefcaseBusiness size={17} /> {t("trustWorker")}</span>
-                </div>
-                <div className="hero-safety-note"><ShieldCheck size={15} /> {t("safetyNote")}</div>
-                <div className="hero-proof-grid" aria-label="Sahayata service highlights">
-                  <div><strong>5 min</strong><span>{t("metricInitialCheck")}</span></div>
-                  <div><strong>₹10k–₹50k</strong><span>{t("metricWorkingCapital")}</span></div>
-                  <div><strong>UPI-led</strong><span>{t("metricCreditSignal")}</span></div>
+                <div className="hero-trust" style={{ marginTop: "24px" }}>
+                  <span><ShieldCheck size={17} /> {t("trustForensics", "8-Layer AI Forensics")}</span>
+                  <span><BrainCircuit size={17} /> {t("trustTwin", "Behavioural Twin")}</span>
+                  <span><BriefcaseBusiness size={17} /> {t("trustFriction", "Zero-Friction Pass")}</span>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* PROBLEM OBSTACLES SECTION (DARK ATMOSPHERIC AI SPACE THEME) */}
+          {/* PROBLEM OBSTACLES SECTION */}
           <div className="section-dark-theme home-surface home-surface-problems" style={{ background: "linear-gradient(180deg, #090f1e, #0b1121)", color: "#f8fafc", padding: "70px 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             <section className="section" id="problem-section">
               <div className="section-inner" style={{ maxWidth: "1240px", margin: "0 auto", padding: "0 20px" }}>
-                <div className="eyebrow" style={{ color: "#38bdf8", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("probEyebrow")}</div>
-                <h2 className="section-title" style={{ color: "#f8fafc", fontSize: "34px", fontWeight: "800", marginTop: "8px", marginBottom: "12px" }}>{t("probTitle")}</h2>
-                <p className="section-sub" style={{ color: "#a9b6ce", fontSize: "16px", marginBottom: "36px" }}>{t("probSub")}</p>
+                <div className="eyebrow" style={{ color: "#38bdf8", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t("probEyebrow", "Challenge Identification")}</div>
+                <h2 className="section-title" style={{ color: "#f8fafc", fontSize: "34px", fontWeight: "800", marginTop: "8px", marginBottom: "12px" }}>{t("probTitle", "Digital Lending Needs Trustworthy Financial Signals")}</h2>
+                <p className="section-sub" style={{ color: "#a9b6ce", fontSize: "16px", marginBottom: "36px" }}>{t("probSub", "Digital lending systems increasingly analyse transaction behaviour, but anomalous patterns require explainable verification.")}</p>
 
-                <div className="prob-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "24px" }}>
-                  {problemsList.map(({ Icon, title, desc }) => (
-                    <div key={title} className="prob-card" style={{ background: "linear-gradient(145deg, rgba(22,36,64,0.88), rgba(11,19,36,0.88))", border: "1px solid rgba(132,179,255,0.15)", borderRadius: "20px", padding: "28px", boxShadow: "0 18px 45px rgba(0,0,0,0.25)", transition: "transform 0.2s ease, boxShadow 0.2s ease" }}>
-                      <div className="prob-icon" style={{ background: "rgba(56, 189, 248, 0.12)", color: "#38bdf8", width: "50px", height: "50px", borderRadius: "14px", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "18px" }}>
-                        <Icon size={24} />
+                <div className="prob-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px" }}>
+                  {problemsList.map((prob, idx) => (
+                    <div key={idx} className="prob-card" style={{ background: "linear-gradient(145deg, rgba(22,36,64,0.88), rgba(11,19,36,0.88))", border: "1px solid rgba(132,179,255,0.15)", borderRadius: "20px", padding: "28px" }}>
+                      <div className="prob-icon" style={{ background: idx === 0 ? "rgba(56, 189, 248, 0.12)" : idx === 1 ? "rgba(245, 158, 11, 0.12)" : "rgba(239, 68, 68, 0.12)", color: idx === 0 ? "#38bdf8" : idx === 1 ? "#fbbf24" : "#fca5a5", width: "50px", height: "50px", borderRadius: "14px", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "18px" }}>
+                        <prob.Icon size={24} />
                       </div>
-                      <h3 style={{ color: "#f8fafc", fontSize: "18px", fontWeight: "700", marginBottom: "10px" }}>{title}</h3>
-                      <p style={{ color: "#a9b6ce", fontSize: "14px", lineHeight: "1.6" }}>{desc}</p>
+                      <h3 style={{ color: "#f8fafc", fontSize: "18px", fontWeight: "700", marginBottom: "10px" }}>{prob.title}</h3>
+                      <p style={{ color: "#a9b6ce", fontSize: "14px", lineHeight: "1.6" }}>{prob.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -411,35 +368,121 @@ export default function App() {
             </section>
           </div>
 
-          {/* THREE PILLAR SOLUTION SECTION */}
-          <div className="section-dark-theme home-surface home-surface-solution">
+          {/* 4-STEP WORKFLOW SECTION: HOW SAHAYATA WORKS */}
+          <div className="section-dark-theme home-surface home-surface-solution" id="how-it-works" style={{ padding: "80px 0" }}>
             <section className="section section-solution">
-              <div className="section-inner">
-                <div className="eyebrow">{t("solEyebrow")}</div>
-                <h2 className="section-title">{t("solTitle")}</h2>
-                <p className="section-sub">{t("solSub")}</p>
-                <div className="sol-layout">
-                  <div className="sol-steps">
-                    {solutionsList.map(({ num, title, desc }) => (
-                      <div key={num} className="sol-step">
-                        <div className="sol-num">{num}</div>
-                        <div><h4>{title}</h4><p>{desc}</p></div>
+              <div className="section-inner" style={{ maxWidth: "1240px", margin: "0 auto", padding: "0 20px" }}>
+                <div className="eyebrow" style={{ color: "#38bdf8", fontWeight: "700" }}>{t("solEyebrow", "EXPLAINABLE AI WORKFLOW")}</div>
+                <h2 className="section-title" style={{ fontSize: "32px", color: "#f8fafc", marginBottom: "16px" }}>{t("solTitle", "How Sahayata Protects Digital Lending")}</h2>
+                <p className="section-sub" style={{ color: "#a9b6ce", marginBottom: "40px" }}>{t("solSub", "Four-step explainable AI workflow to learn behaviour baselines and detect anomalous transaction signals.")}</p>
+                <div className="sol-layout" style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "60px" }}>
+                  <div className="sol-steps" style={{ display: "grid", gap: "24px" }}>
+                    <div className="sol-step" style={{ display: "flex", gap: "20px" }}>
+                      <div className="sol-num" style={{ background: "#1e293b", color: "#38bdf8", padding: "10px 16px", borderRadius: "12px", fontWeight: "800" }}>01</div>
+                      <div>
+                        <h4 style={{ color: "#f8fafc", marginBottom: "4px" }}>{t("step1Title", "STEP 1 — LEARN BASELINES")}</h4>
+                        <p style={{ color: "#a9b6ce", fontSize: "14px" }}>{t("step1Desc", "AI analyses historical transaction patterns including transfer frequency, typical amount windows, daytime transaction habits, and device geofence baselines.")}</p>
                       </div>
-                    ))}
-                  </div>
-                  <aside className="flowbox" aria-label="Credit flow pipeline">
-                    <div className="flowbox-kicker">{t("solFlow")}</div>
-                    <h3>{t("flowTitle")}</h3>
-                    <div className="flow-visual">
-                      <div className="flow-node flow-node-worker"><span className="flow-node-icon">₹</span><div><b>{t("flowWorker")}</b><small>{t("flowWorkerSub")}</small></div></div>
-                      <div className="flow-connector"><span>01</span></div>
-                      <div className="flow-node flow-node-score"><span className="flow-node-icon">↗</span><div><b>{t("flowScore")}</b><small>{t("flowScoreSub")}</small></div></div>
-                      <div className="flow-connector"><span>02</span></div>
-                      <div className="flow-node flow-node-bank"><span className="flow-node-icon">✓</span><div><b>{t("flowBank")}</b><small>{t("flowBankSub")}</small></div></div>
                     </div>
-                    <div className="flowbox-metrics"><div><strong>5 min</strong><span>{t("metricInitialCheck")}</span></div><div><strong>₹10k–₹50k</strong><span>{t("metricWorkingCapital")}</span></div></div>
-                    <p className="flow-note"><ShieldCheck size={15} /> {t("solNote")}</p>
+
+                    <div className="sol-step" style={{ display: "flex", gap: "20px" }}>
+                      <div className="sol-num" style={{ background: "#1e293b", color: "#38bdf8", padding: "10px 16px", borderRadius: "12px", fontWeight: "800" }}>02</div>
+                      <div>
+                        <h4 style={{ color: "#f8fafc", marginBottom: "4px" }}>{t("step2Title", "STEP 2 — BUILD FINANCIAL TWIN")}</h4>
+                        <p style={{ color: "#a9b6ce", fontSize: "14px" }}>{t("step2Desc", "Sahayata creates an AI Financial Behaviour Twin establishing a personalised baseline: 'What is authentic behaviour for this user?'")}</p>
+                      </div>
+                    </div>
+
+                    <div className="sol-step" style={{ display: "flex", gap: "20px" }}>
+                      <div className="sol-num" style={{ background: "#1e293b", color: "#38bdf8", padding: "10px 16px", borderRadius: "12px", fontWeight: "800" }}>03</div>
+                      <div>
+                        <h4 style={{ color: "#f8fafc", marginBottom: "4px" }}>{t("step3Title", "STEP 3 — DETECT ANOMALIES & FRAUD")}</h4>
+                        <p style={{ color: "#a9b6ce", fontSize: "14px" }}>{t("step3Desc", "Live AI Fraud Engine inspects incoming transfers, statement balance arithmetic continuity, EXIF metadata edits, and unverified receiver VPA handles.")}</p>
+                      </div>
+                    </div>
+
+                    <div className="sol-step" style={{ display: "flex", gap: "20px" }}>
+                      <div className="sol-num" style={{ background: "#1e293b", color: "#38bdf8", padding: "10px 16px", borderRadius: "12px", fontWeight: "800" }}>04</div>
+                      <div>
+                        <h4 style={{ color: "#f8fafc", marginBottom: "4px" }}>{t("step4Title", "STEP 4 — PROTECT & UNDERWRITE")}</h4>
+                        <p style={{ color: "#a9b6ce", fontSize: "14px" }}>{t("step4Desc", "Generates real-time risk scores, explainable AI breakdown cards, flagged transaction lines, and proportionate lender recommendations for safe credit decisions.")}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <aside className="flowbox" style={{ background: "rgba(15, 23, 42, 0.5)", padding: "30px", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.1)" }} aria-label="Transaction Security pipeline">
+                    <div className="flowbox-kicker" style={{ fontSize: "12px", color: "#38bdf8" }}>{t("solFlow", "Digital Lending Security Pipeline")}</div>
+                    <h3 style={{ fontSize: "18px", color: "#fff", margin: "10px 0" }}>{t("flowTitle", "AI Transaction & Fraud Intelligence")}</h3>
+                    <div className="flow-visual" style={{ margin: "20px 0" }}>
+                      <div className="flow-node"><b>{t("flowWorker", "Digital Signals")}</b></div>
+                      <div className="flow-connector">01</div>
+                      <div className="flow-node"><b>{t("flowScore", "Fraud Inspection")}</b></div>
+                      <div className="flow-connector">02</div>
+                      <div className="flow-node"><b>{t("flowBank", "Verified Signal")}</b></div>
+                    </div>
+                    <p className="flow-note" style={{ fontSize: "12px", color: "#a9b6ce" }}><ShieldCheck size={15} /> {t("solNote", "Flagging suspicious signals for verification rather than automatically declining clean applicants.")}</p>
                   </aside>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* USER & LENDER BENEFITS SECTION */}
+          <div className="section-dark-theme home-surface" style={{ background: "linear-gradient(180deg, #0b1121, #080d1a)", color: "#f8fafc", padding: "60px 0", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            <section className="section">
+              <div className="section-inner" style={{ maxWidth: "1240px", margin: "0 auto", padding: "0 20px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "30px" }}>
+                  
+                  {/* USER BENEFITS */}
+                  <div style={{ background: "linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9))", border: "1px solid rgba(56, 189, 248, 0.2)", borderRadius: "24px", padding: "30px" }}>
+                    <div style={{ color: "#38bdf8", fontWeight: "700", fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" }}>{t("userBenefitsTitle", "Protection for Users")}</div>
+                    <h3 style={{ fontSize: "22px", fontWeight: "800", color: "#f8fafc", marginBottom: "18px" }}>{t("userBenefitsHeading", "Better Signals for Genuine Users")}</h3>
+                    
+                    <div style={{ display: "grid", gap: "14px" }}>
+                      <div>
+                        <strong style={{ color: "#38bdf8", fontSize: "14px" }}>{t("userBen1Title", "1. Personalised Analysis")}</strong>
+                        <p style={{ color: "#a9b6ce", fontSize: "13px", margin: "4px 0 0 0" }}>{t("userBen1Desc", "Evaluates behaviour relative to the individual user's historical pattern instead of relying only on generic thresholds.")}</p>
+                      </div>
+                      <div>
+                        <strong style={{ color: "#38bdf8", fontSize: "14px" }}>{t("userBen2Title", "2. Suspicious Activity Awareness")}</strong>
+                        <p style={{ color: "#a9b6ce", fontSize: "13px", margin: "4px 0 0 0" }}>{t("userBen2Desc", "Unusual financial behaviour can be flagged for additional review.")}</p>
+                      </div>
+                      <div>
+                        <strong style={{ color: "#38bdf8", fontSize: "14px" }}>{t("userBen3Title", "3. Reduced Unnecessary Friction")}</strong>
+                        <p style={{ color: "#a9b6ce", fontSize: "13px", margin: "4px 0 0 0" }}>{t("userBen3Desc", "A suspicious signal triggers proportionate verification rather than automatic rejection.")}</p>
+                      </div>
+                      <div>
+                        <strong style={{ color: "#38bdf8", fontSize: "14px" }}>{t("userBen4Title", "4. Fairer Financial Assessment")}</strong>
+                        <p style={{ color: "#a9b6ce", fontSize: "13px", margin: "4px 0 0 0" }}>{t("userBen4Desc", "Context-aware analysis helps distinguish stable historical behaviour from significant deviations.")}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* LENDER BENEFITS */}
+                  <div style={{ background: "linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9))", border: "1px solid rgba(168, 85, 247, 0.2)", borderRadius: "24px", padding: "30px" }}>
+                    <div style={{ color: "#c084fc", fontWeight: "700", fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" }}>{t("lenderBenefitsTitle", "Lender Benefits")}</div>
+                    <h3 style={{ fontSize: "22px", fontWeight: "800", color: "#f8fafc", marginBottom: "18px" }}>{t("lenderBenefitsHeading", "Safer Digital Lending Decisions")}</h3>
+                    
+                    <div style={{ display: "grid", gap: "14px" }}>
+                      <div>
+                        <strong style={{ color: "#c084fc", fontSize: "14px" }}>{t("lenderBen1Title", "• AI-assisted anomaly detection")}</strong>
+                        <p style={{ color: "#a9b6ce", fontSize: "13px", margin: "4px 0 0 0" }}>{t("lenderBen1Desc", "Automated 8-layer identification of unusual transaction timing and amount spikes.")}</p>
+                      </div>
+                      <div>
+                        <strong style={{ color: "#c084fc", fontSize: "14px" }}>{t("lenderBen2Title", "• Suspicious financial signals highlighted")}</strong>
+                        <p style={{ color: "#a9b6ce", fontSize: "13px", margin: "4px 0 0 0" }}>{t("lenderBen2Desc", "Flags potential image tampering, EXIF edits, and velocity anomalies.")}</p>
+                      </div>
+                      <div>
+                        <strong style={{ color: "#c084fc", fontSize: "14px" }}>{t("lenderBen3Title", "• Explainable risk indicators")}</strong>
+                        <p style={{ color: "#a9b6ce", fontSize: "13px", margin: "4px 0 0 0" }}>{t("lenderBen3Desc", "Detailed reasoning behind every flagged transaction for risk analyst confidence.")}</p>
+                      </div>
+                      <div>
+                        <strong style={{ color: "#c084fc", fontSize: "14px" }}>{t("lenderBen4Title", "• Prioritised verification workflow")}</strong>
+                        <p style={{ color: "#a9b6ce", fontSize: "13px", margin: "4px 0 0 0" }}>{t("lenderBen4Desc", "High-priority review queue for applicants with significant anomalous signals.")}</p>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </section>

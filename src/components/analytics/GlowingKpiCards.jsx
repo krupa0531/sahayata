@@ -29,18 +29,18 @@ export default function GlowingKpiCards() {
     return () => window.removeEventListener('sahayata_analytics_update', handleSyncUpdate);
   }, []);
 
-  const totalWorkers = syncState.totalWorkersCount ?? 4;
+  const totalWorkers = syncState.totalWorkersCount ?? 0;
   const activeSchemes = syncState.submittedApplicationsCount ?? 0;
   const loansDisbursed = syncState.disbursedLoansAmount ?? 0;
-  const aiChats = syncState.aiConversationsCount ?? 6;
-  const fraudBlocked = syncState.fraudAttemptsCount ?? 3;
+  const aiChats = syncState.aiConversationsCount ?? 0;
+  const fraudBlocked = syncState.fraudAttemptsCount ?? 0;
 
   const KPI_LIST = [
     {
       id: 'workers',
       label: 'Total Workers',
       displayVal: String(totalWorkers),
-      trend: 'Live',
+      trend: totalWorkers > 0 ? 'Live' : '0 Live',
       isUp: true,
       icon: Users,
       color: '#0284c7',
@@ -62,7 +62,7 @@ export default function GlowingKpiCards() {
       id: 'ekyc',
       label: 'e-KYC Verified',
       displayVal: String(totalWorkers),
-      trend: '100% Verified',
+      trend: totalWorkers > 0 ? '100% Verified' : '0 Verified',
       isUp: true,
       icon: ShieldCheck,
       color: '#059669',
@@ -95,7 +95,7 @@ export default function GlowingKpiCards() {
       id: 'ai_chats',
       label: 'AI Conversations',
       displayVal: String(aiChats),
-      trend: 'Real-time',
+      trend: aiChats > 0 ? 'Real-time' : '0 Sessions',
       isUp: true,
       icon: MessageSquareCode,
       color: '#0284C7',

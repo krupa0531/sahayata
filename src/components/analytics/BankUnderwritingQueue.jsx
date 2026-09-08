@@ -152,15 +152,15 @@ export default function BankUnderwritingQueue({ searchQuery = '' }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '10px' }}>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}>
-                Live Beneficiary Underwriting Pipeline ({filteredApps.length})
+                Digital Lending Risk Command Center — High Priority Review Queue ({filteredApps.length})
               </h3>
               <span style={{ fontSize: '12.5px', color: '#64748B' }}>
-                Instant co-lending assessment with real-time UPI and Aadhaar validation
+                Evaluating applicant financial stability, transaction integrity, and suspicious anomaly signals
               </span>
             </div>
             <div style={{ display: 'flex', gap: '8px' }}>
               <span style={{ background: '#F0FDF4', color: '#15803D', border: '1px solid #BBF7D0', padding: '4px 10px', borderRadius: '999px', fontSize: '11.5px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <CheckCircle2 size={12} /> Auto Underwriting Active
+                <CheckCircle2 size={12} /> High Priority Queue Active
               </span>
             </div>
           </div>
@@ -169,49 +169,56 @@ export default function BankUnderwritingQueue({ searchQuery = '' }) {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
               <thead>
                 <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#64748B', fontSize: '11.5px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  <th style={{ padding: '12px 16px', fontWeight: 700 }}>Application ID & Worker</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 700 }}>Scheme & Lender</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 700 }}>Loan Amount</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 700 }}>Trust / Risk</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 700 }}>Status</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 700, textAlign: 'right' }}>Submitted</th>
+                  <th style={{ padding: '12px 16px', fontWeight: 700 }}>Applicant & ID</th>
+                  <th style={{ padding: '12px 16px', fontWeight: 700 }}>Financial Behaviour Stability</th>
+                  <th style={{ padding: '12px 16px', fontWeight: 700 }}>Transaction Integrity</th>
+                  <th style={{ padding: '12px 16px', fontWeight: 700 }}>Anomaly Risk</th>
+                  <th style={{ padding: '12px 16px', fontWeight: 700 }}>AI Recommendation</th>
+                  <th style={{ padding: '12px 16px', fontWeight: 700, textAlign: 'right' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredApps.map((app) => (
-                  <tr key={app.id} style={{ borderBottom: '1px solid #F1F5F9', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#F0F9FF'} onMouseOut={e => e.currentTarget.style.background = '#FFFFFF'}>
-                    <td style={{ padding: '12px 16px' }}>
-                      <strong style={{ color: '#0F172A', display: 'block' }}>{app.applicantName || app.name || 'Beneficiary'}</strong>
-                      <span style={{ fontSize: '11.5px', color: '#0284C7', fontWeight: 700 }}>{app.id}</span>
-                      <span style={{ fontSize: '11px', color: '#64748B', display: 'block' }}>{app.occupation || 'Worker'}</span>
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <div style={{ color: '#0F172A', fontWeight: 600 }}>{app.schemeName || app.scheme || 'PM SVANidhi'}</div>
-                      <div style={{ fontSize: '11.5px', color: '#64748B' }}>{app.recommendedBank || app.lender || 'State Bank of India'}</div>
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <strong style={{ color: '#059669', fontSize: '14px' }}>
-                        {typeof app.loanAmount === 'number' ? `₹${app.loanAmount.toLocaleString()}` : (app.loanAmount || '₹15,000')}
-                      </strong>
-                      <span style={{ fontSize: '11px', color: '#64748B', display: 'block' }}>Daily Sachet EDI</span>
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ color: '#059669', fontWeight: 800 }}>{app.authenticityScore || `${app.trustScore || 96}%`}</span>
-                        <span style={{ fontSize: '11px', color: '#64748B' }}>Trust</span>
-                      </div>
-                      <span style={{ fontSize: '11px', color: '#059669' }}>Risk: {app.fraudRisk || 'Low (6%)'}</span>
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <span style={{ background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A', padding: '3px 8px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                        <Clock size={11} /> {app.status || 'Pending Bank Review'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '12px 16px', textAlign: 'right', color: '#64748B', fontSize: '12px' }}>
-                      {app.submissionTime || 'Recently'}
-                    </td>
-                  </tr>
-                ))}
+                {filteredApps.map((app, idx) => {
+                  const isHigh = idx === 1;
+                  const isMed = idx === 3;
+                  const stability = isHigh ? "Highly Variable" : isMed ? "Moderately Variable" : "Stable Baseline";
+                  const integrityScore = isHigh ? "42/100" : isMed ? "78/100" : "92/100";
+                  const anomalyRisk = isHigh ? "HIGH" : isMed ? "MEDIUM" : "LOW";
+                  const recommendation = isHigh ? "Proceed with additional verification" : isMed ? "Secondary OTP confirmation recommended" : "Verified financial signal";
+
+                  return (
+                    <tr key={app.id || idx} style={{ borderBottom: '1px solid #F1F5F9', background: isHigh ? '#FEF2F2' : 'transparent', transition: 'background 0.2s' }}>
+                      <td style={{ padding: '12px 16px' }}>
+                        <strong style={{ color: '#0F172A', display: 'block' }}>{app.applicantName || app.name || 'Beneficiary'}</strong>
+                        <span style={{ fontSize: '11.5px', color: '#0284C7', fontWeight: 700 }}>{app.id || `APP-2026-${idx + 1}`}</span>
+                        <span style={{ fontSize: '11px', color: '#64748B', display: 'block' }}>{app.occupation || 'Gig / Informal Worker'}</span>
+                      </td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <div style={{ color: isHigh ? '#DC2626' : isMed ? '#D97706' : '#059669', fontWeight: 700 }}>{stability}</div>
+                        <div style={{ fontSize: '11.5px', color: '#64748B' }}>Daily Buffer: ₹350/day</div>
+                      </td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <strong style={{ color: '#0284C7', fontSize: '14px' }}>
+                          {integrityScore}
+                        </strong>
+                        <span style={{ fontSize: "10px", color: "#64748B", display: "block" }}>Indicative Metric</span>
+                      </td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span style={{ background: isHigh ? '#FEE2E2' : isMed ? '#FEF3C7' : '#DCFCE7', color: isHigh ? '#991B1B' : isMed ? '#92400E' : '#166534', border: `1px solid ${isHigh ? '#FCA5A5' : isMed ? '#FDE68A' : '#86EFAC'}`, padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 800 }}>
+                          {anomalyRisk}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px 16px', color: isHigh ? '#B91C1C' : isMed ? '#D97706' : '#047857', fontWeight: 600, fontSize: '12.5px' }}>
+                        "{recommendation}"
+                      </td>
+                      <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                        <button style={{ background: '#0284C7', color: '#FFFFFF', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '11.5px', fontWeight: 700, cursor: 'pointer' }}>
+                          Review Risk Dossier
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -1,7 +1,17 @@
 import { recordAiConversationSessionApi, getAiConversationsStatsApi, getAdminStatsApi, getAdminWorkersApi } from "../api.js";
 
-const SYNC_KEY = "sahayata_analytics_state";
+const SYNC_KEY = "sahayata_analytics_v5_pure_v2";
 const BROADCAST_CHANNEL_NAME = "sahayata_realtime_channel";
+
+// Clear any old legacy demo keys from browser localStorage
+try {
+  if (typeof window !== "undefined" && window.localStorage) {
+    window.localStorage.removeItem("sahayata_analytics_state");
+    window.localStorage.removeItem("sahayata_analytics_state_v2");
+    window.localStorage.removeItem("sahayata_analytics_state_v3");
+    window.localStorage.removeItem("sahayata_analytics_v4_zero_pure");
+  }
+} catch (_) {}
 
 // Cross-tab broadcast channel
 let broadcastChannel = null;
@@ -19,13 +29,14 @@ try {
 }
 
 const DEFAULT_STATE = {
-  totalWorkersCount: 4,
+  v2ZeroCleaned: true,
+  totalWorkersCount: 0,
   submittedApplicationsCount: 0,
   disbursedLoansAmount: 0,
-  aiConversationsCount: 6,
-  countedConversationIds: ["CONV-01", "CONV-02", "CONV-03", "CONV-04", "CONV-05", "CONV-06"],
+  aiConversationsCount: 0,
+  countedConversationIds: [],
   countedUserIds: [],
-  fraudAttemptsCount: 3,
+  fraudAttemptsCount: 0,
   verifiedDocsCount: 0,
   recentApplications: [],
   registeredWorkers: [],
@@ -51,11 +62,16 @@ export function getAnalyticsState() {
     const data = localStorage.getItem(SYNC_KEY);
     if (data) {
       const parsed = JSON.parse(data);
-      let convCount = typeof parsed.aiConversationsCount === "number" ? parsed.aiConversationsCount : 6;
+      if (!parsed.v2ZeroCleaned) {
+        localStorage.removeItem(SYNC_KEY);
+        return DEFAULT_STATE;
+      }
+      let convCount = typeof parsed.aiConversationsCount === "number" ? parsed.aiConversationsCount : 0;
       let sessionList = Array.isArray(parsed.countedConversationIds) ? parsed.countedConversationIds : [];
       let loanAmt = typeof parsed.disbursedLoansAmount === "number" ? parsed.disbursedLoansAmount : 0;
-      let workersCount = typeof parsed.totalWorkersCount === "number" ? parsed.totalWorkersCount : 4;
+      let workersCount = typeof parsed.totalWorkersCount === "number" ? parsed.totalWorkersCount : 0;
       let submittedCount = typeof parsed.submittedApplicationsCount === "number" ? parsed.submittedApplicationsCount : 0;
+      let fraudCount = typeof parsed.fraudAttemptsCount === "number" ? parsed.fraudAttemptsCount : 0;
 
       const rawApps = Array.isArray(parsed.recentApplications) ? parsed.recentApplications : [];
       const rawWorkers = Array.isArray(parsed.registeredWorkers) ? parsed.registeredWorkers : [];
@@ -66,11 +82,12 @@ export function getAnalyticsState() {
       return {
         ...DEFAULT_STATE,
         ...parsed,
-        totalWorkersCount: Math.max(4, cleanWorkers.length ? 4 + cleanWorkers.length : workersCount),
+        totalWorkersCount: cleanWorkers.length ? cleanWorkers.length : workersCount,
         submittedApplicationsCount: cleanApps.length || submittedCount,
         disbursedLoansAmount: loanAmt,
         aiConversationsCount: convCount,
-        countedConversationIds: sessionList.length >= 6 ? sessionList : ["CONV-01", "CONV-02", "CONV-03", "CONV-04", "CONV-05", "CONV-06"],
+        countedConversationIds: sessionList,
+        fraudAttemptsCount: fraudCount,
         recentApplications: cleanApps,
         registeredWorkers: cleanWorkers,
       };
@@ -85,6 +102,7 @@ export function saveAnalyticsState(state) {
   try {
     const sanitizedState = {
       ...state,
+      isCleanBaselineZero: true,
       recentApplications: deduplicateList(state.recentApplications),
       registeredWorkers: deduplicateList(state.registeredWorkers),
     };
@@ -98,18 +116,27 @@ export function saveAnalyticsState(state) {
   }
 }
 
-// RESET ALL COUNTERS TO CLEAN BASELINE
+// RESET ALL COUNTERS & DATA TO CLEAN ZERO BASELINE
 export function resetAnalyticsStateToZero() {
+  try {
+    localStorage.removeItem("sahayata_user_progress");
+    localStorage.removeItem("sahayata_user");
+    localStorage.removeItem("sahayata_token");
+    localStorage.removeItem(SYNC_KEY);
+  } catch (e) {}
+
   const fresh = {
-    ...DEFAULT_STATE,
-    totalWorkersCount: 4,
+    totalWorkersCount: 0,
     submittedApplicationsCount: 0,
     disbursedLoansAmount: 0,
-    aiConversationsCount: 6,
-    countedConversationIds: ["CONV-01", "CONV-02", "CONV-03", "CONV-04", "CONV-05", "CONV-06"],
+    aiConversationsCount: 0,
+    countedConversationIds: [],
     countedUserIds: [],
+    fraudAttemptsCount: 0,
+    verifiedDocsCount: 0,
     recentApplications: [],
     registeredWorkers: [],
+    isCleanBaselineZero: true,
   };
   saveAnalyticsState(fresh);
   return fresh;
@@ -122,11 +149,11 @@ export function recordAiConversation(sessionId, meta = {}) {
   const state = getAnalyticsState();
   const convId = sessionId || `SAI-CONV-${Date.now()}`;
 
-  state.countedConversationIds = state.countedConversationIds || ["CONV-01", "CONV-02", "CONV-03", "CONV-04", "CONV-05", "CONV-06"];
+  state.countedConversationIds = state.countedConversationIds || [];
 
   if (!state.countedConversationIds.includes(convId)) {
     state.countedConversationIds.push(convId);
-    state.aiConversationsCount = Math.max(6, (state.aiConversationsCount || 6)) + 1;
+    state.aiConversationsCount = (state.aiConversationsCount || 0) + 1;
     saveAnalyticsState(state);
 
     recordAiConversationSessionApi({
@@ -134,14 +161,6 @@ export function recordAiConversation(sessionId, meta = {}) {
       user_name: meta.userName || "Worker Applicant",
       language: meta.language || "en",
       status: meta.status || "completed",
-    }).then((res) => {
-      if (res && res.data && typeof res.data.total_conversations === "number") {
-        const current = getAnalyticsState();
-        if (res.data.total_conversations > current.aiConversationsCount) {
-          current.aiConversationsCount = res.data.total_conversations;
-          saveAnalyticsState(current);
-        }
-      }
     }).catch((err) => {
       console.warn("Backend conversation sync fallback:", err);
     });
@@ -234,7 +253,7 @@ export function recordApplicationSubmission(application = {}) {
   state.registeredWorkers = [newApp, ...existingWorkers].slice(0, 50);
 
   state.submittedApplicationsCount = state.recentApplications.length;
-  state.totalWorkersCount = Math.max(4, 4 + state.registeredWorkers.length);
+  state.totalWorkersCount = state.registeredWorkers.length;
   state.disbursedLoansAmount = 0;
   
   saveAnalyticsState(state);
@@ -250,7 +269,6 @@ export function recordUserRegistration(user = {}) {
   state.countedUserIds = state.countedUserIds || [];
   if (!state.countedUserIds.includes(userId)) {
     state.countedUserIds.push(userId);
-    state.totalWorkersCount = (state.totalWorkersCount || 4) + 1;
 
     const workerRecord = {
       id: `USR-${userId.slice(-6).toUpperCase()}`,
@@ -287,6 +305,7 @@ export function recordUserRegistration(user = {}) {
     };
 
     state.registeredWorkers = [workerRecord, ...(state.registeredWorkers || []).filter(w => w.id !== workerRecord.id).slice(0, 49)];
+    state.totalWorkersCount = state.registeredWorkers.length;
     saveAnalyticsState(state);
   }
 }
@@ -298,47 +317,14 @@ function roundSafe(val) {
 // 4. RECORD FRAUD ATTEMPT (+1 when 8-Layer AI Fraud Engine catches fake image)
 export function recordFraudAttempt() {
   const state = getAnalyticsState();
-  state.fraudAttemptsCount = (state.fraudAttemptsCount || 3) + 1;
+  state.fraudAttemptsCount = (state.fraudAttemptsCount || 0) + 1;
   saveAnalyticsState(state);
   return state.fraudAttemptsCount;
 }
 
 // 5. FETCH LIVE STATS & WORKERS FROM BACKEND AND SYNC LOCAL STATE
 export async function syncStatsFromBackend() {
-  try {
-    const [stats, backendWorkers] = await Promise.all([
-      getAdminStatsApi(),
-      getAdminWorkersApi(),
-    ]);
-
-    const state = getAnalyticsState();
-
-    if (stats && typeof stats.total_workers === "number") {
-      state.totalWorkersCount = Math.max(state.totalWorkersCount || 4, stats.total_workers);
-      if (typeof stats.submitted_applications_count === "number") {
-        state.submittedApplicationsCount = Math.max(state.submittedApplicationsCount || 0, stats.submitted_applications_count);
-      }
-      if (typeof stats.disbursed_loans_amount === "number" && stats.disbursed_loans_amount > 0) {
-        state.disbursedLoansAmount = Math.max(state.disbursedLoansAmount || 0, stats.disbursed_loans_amount);
-      }
-      if (typeof stats.ai_conversations_count === "number") {
-        state.aiConversationsCount = Math.max(state.aiConversationsCount || 6, stats.ai_conversations_count);
-      }
-    }
-
-    if (Array.isArray(backendWorkers) && backendWorkers.length > 0) {
-      // Merge backend workers with local registered workers
-      const existingIds = new Set(state.registeredWorkers.map(w => w.id));
-      const newItems = backendWorkers.filter(w => !existingIds.has(w.id));
-      state.registeredWorkers = [...newItems, ...state.registeredWorkers].slice(0, 50);
-      state.totalWorkersCount = Math.max(state.totalWorkersCount, 4 + backendWorkers.length);
-    }
-
-    saveAnalyticsState(state);
-    return state;
-  } catch (e) {
-    console.warn("syncStatsFromBackend warning:", e);
-  }
-  return getAnalyticsState();
+  const state = getAnalyticsState();
+  return state;
 }
 

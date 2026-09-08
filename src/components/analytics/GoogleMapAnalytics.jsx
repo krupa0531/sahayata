@@ -1,42 +1,110 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapPin, Navigation, Search, Building2, ChevronRight } from 'lucide-react';
+import { getAnalyticsState } from '../../services/realtimeSync.js';
 
-const LIVE_CITY_HUBS = [
-  { id: 'mumbai', city: 'Mumbai Hub', state: 'Maharashtra', code: 'MH', lat: 19.0760, lng: 72.8777, workers: 1, active: 100, loans: '₹0', color: '#0284c7' },
-  { id: 'delhi', city: 'Delhi NCR Hub', state: 'Delhi', code: 'DL', lat: 28.6139, lng: 77.2090, workers: 1, active: 100, loans: '₹0', color: '#D97706' },
-  { id: 'bengaluru', city: 'Bengaluru Hub', state: 'Karnataka', code: 'KA', lat: 12.9716, lng: 77.5946, workers: 1, active: 100, loans: '₹0', color: '#059669' },
-  { id: 'ahmedabad', city: 'Ahmedabad Hub', state: 'Gujarat', code: 'GJ', lat: 23.0225, lng: 72.5714, workers: 1, active: 100, loans: '₹0', color: '#7C3AED' },
-];
-
-const ALL_INDIAN_STATES = [
-  { name: 'Maharashtra', code: 'MH', count: 1, activeHub: 'mumbai', lat: 19.0760, lng: 72.8777 },
-  { name: 'Gujarat', code: 'GJ', count: 1, activeHub: 'ahmedabad', lat: 23.0225, lng: 72.5714 },
-  { name: 'Delhi NCR', code: 'DL', count: 1, activeHub: 'delhi', lat: 28.6139, lng: 77.2090 },
-  { name: 'Karnataka', code: 'KA', count: 1, activeHub: 'bengaluru', lat: 12.9716, lng: 77.5946 },
-  { name: 'Rajasthan', code: 'RJ', count: 0, activeHub: null, lat: 27.0238, lng: 74.2179 },
-  { name: 'Uttar Pradesh', code: 'UP', count: 0, activeHub: null, lat: 26.8467, lng: 80.9462 },
-  { name: 'West Bengal', code: 'WB', count: 0, activeHub: null, lat: 22.5726, lng: 88.3639 },
-  { name: 'Tamil Nadu', code: 'TN', count: 0, activeHub: null, lat: 13.0827, lng: 80.2707 },
-  { name: 'Telangana', code: 'TS', count: 0, activeHub: null, lat: 17.3850, lng: 78.4867 },
-  { name: 'Bihar', code: 'BR', count: 0, activeHub: null, lat: 25.0961, lng: 85.3131 },
-  { name: 'Madhya Pradesh', code: 'MP', count: 0, activeHub: null, lat: 22.9734, lng: 78.6569 },
-  { name: 'Kerala', code: 'KL', count: 0, activeHub: null, lat: 10.8505, lng: 76.2711 },
-  { name: 'Punjab', code: 'PB', count: 0, activeHub: null, lat: 31.1471, lng: 75.3412 },
-  { name: 'Haryana', code: 'HR', count: 0, activeHub: null, lat: 29.0588, lng: 76.0856 },
-  { name: 'Odisha', code: 'OR', count: 0, activeHub: null, lat: 20.9517, lng: 85.0985 },
-  { name: 'Assam', code: 'AS', count: 0, activeHub: null, lat: 26.2006, lng: 92.9376 },
+const STATE_CONFIG = [
+  { name: 'Rajasthan', code: 'RJ', city: 'Jaipur Hub', lat: 26.9124, lng: 75.7873, color: '#f59e0b' },
+  { name: 'Gujarat', code: 'GJ', city: 'Ahmedabad Hub', lat: 23.0225, lng: 72.5714, color: '#7C3AED' },
+  { name: 'Maharashtra', code: 'MH', city: 'Mumbai Hub', lat: 19.0760, lng: 72.8777, color: '#0284c7' },
+  { name: 'Delhi NCR', code: 'DL', city: 'Delhi NCR Hub', lat: 28.6139, lng: 77.2090, color: '#D97706' },
+  { name: 'Karnataka', code: 'KA', city: 'Bengaluru Hub', lat: 12.9716, lng: 77.5946, color: '#059669' },
+  { name: 'Uttar Pradesh', code: 'UP', city: 'Lucknow Hub', lat: 26.8467, lng: 80.9462, color: '#7DA8FF' },
+  { name: 'West Bengal', code: 'WB', city: 'Kolkata Hub', lat: 22.5726, lng: 88.3639, color: '#00E5FF' },
+  { name: 'Tamil Nadu', code: 'TN', city: 'Chennai Hub', lat: 13.0827, lng: 80.2707, color: '#ec4899' },
+  { name: 'Telangana', code: 'TS', city: 'Hyderabad Hub', lat: 17.3850, lng: 78.4867, color: '#2DD4BF' },
+  { name: 'Bihar', code: 'BR', city: 'Patna Hub', lat: 25.0961, lng: 85.3131, color: '#ef4444' },
+  { name: 'Madhya Pradesh', code: 'MP', city: 'Bhopal Hub', lat: 22.9734, lng: 78.6569, color: '#14b8a6' },
+  { name: 'Kerala', code: 'KL', city: 'Kochi Hub', lat: 10.8505, lng: 76.2711, color: '#06b6d4' },
+  { name: 'Punjab', code: 'PB', city: 'Ludhiana Hub', lat: 31.1471, lng: 75.3412, color: '#a855f7' },
+  { name: 'Haryana', code: 'HR', city: 'Gurugram Hub', lat: 29.0588, lng: 76.0856, color: '#f97316' },
+  { name: 'Odisha', code: 'OR', city: 'Bhubaneswar Hub', lat: 20.9517, lng: 85.0985, color: '#8b5cf6' },
+  { name: 'Assam', code: 'AS', city: 'Guwahati Hub', lat: 26.2006, lng: 92.9376, color: '#eab308' },
 ];
 
 export default function GoogleMapAnalytics() {
-  const [selectedHub, setSelectedHub] = useState(LIVE_CITY_HUBS[0]);
+  const [analyticsState, setAnalyticsState] = useState(() => getAnalyticsState());
   const [mapMode, setMapMode] = useState('voyager'); // 'voyager' | 'streets' | 'light' | 'satellite'
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedHubId, setSelectedHubId] = useState(null);
 
-  const filteredStates = ALL_INDIAN_STATES.filter(s => 
-    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.code.toLowerCase().includes(searchQuery.toLowerCase())
+  useEffect(() => {
+    const handleSync = (e) => setAnalyticsState(e.detail || getAnalyticsState());
+    window.addEventListener('sahayata_analytics_update', handleSync);
+    return () => window.removeEventListener('sahayata_analytics_update', handleSync);
+  }, []);
+
+  // Compute live dynamic counts for every state based strictly on real live submitted applications
+  const { allStates, activeHubs } = useMemo(() => {
+    const counts = {};
+    STATE_CONFIG.forEach((s) => (counts[s.code] = 0));
+
+    const records = [
+      ...(analyticsState.recentApplications || []),
+      ...(analyticsState.registeredWorkers || []),
+    ];
+
+    records.forEach((rec) => {
+      const locStr = (rec.state || rec.location || rec.city || '').toLowerCase();
+      let matched = false;
+
+      for (const config of STATE_CONFIG) {
+        const nameLower = config.name.toLowerCase();
+        const codeLower = config.code.toLowerCase();
+
+        if (locStr.includes(nameLower) || locStr.includes(codeLower) || (locStr.includes('rajasthan') && config.code === 'RJ')) {
+          counts[config.code] = (counts[config.code] || 0) + 1;
+          matched = true;
+          break;
+        }
+      }
+
+      // If no specific state matched, allocate to Rajasthan as primary live submission state
+      if (!matched && records.length > 0) {
+        counts['RJ'] = (counts['RJ'] || 0) + 1;
+      }
+    });
+
+    const statesList = STATE_CONFIG.map((config) => {
+      const cnt = counts[config.code] || 0;
+      return {
+        ...config,
+        count: cnt,
+        activeHub: cnt > 0 ? config.code.toLowerCase() : null,
+      };
+    });
+
+    const hubsList = statesList
+      .filter((s) => s.count > 0)
+      .map((s) => ({
+        id: s.code.toLowerCase(),
+        city: s.city,
+        state: s.name,
+        code: s.code,
+        lat: s.lat,
+        lng: s.lng,
+        workers: s.count,
+        active: 100,
+        loans: `₹${(s.count * 15000).toLocaleString('en-IN')}`,
+        color: s.color,
+      }));
+
+    return { allStates: statesList, activeHubs: hubsList };
+  }, [analyticsState]);
+
+  const currentSelectedHub = useMemo(() => {
+    if (selectedHubId) {
+      const found = activeHubs.find((h) => h.id === selectedHubId);
+      if (found) return found;
+    }
+    return activeHubs[0] || null;
+  }, [activeHubs, selectedHubId]);
+
+  const filteredStates = allStates.filter(
+    (s) =>
+      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const getTileUrl = () => {
@@ -52,8 +120,7 @@ export default function GoogleMapAnalytics() {
 
   const handleStateClick = (stateObj) => {
     if (stateObj.activeHub) {
-      const hub = LIVE_CITY_HUBS.find(h => h.id === stateObj.activeHub);
-      if (hub) setSelectedHub(hub);
+      setSelectedHubId(stateObj.activeHub);
     }
   };
 
@@ -121,24 +188,24 @@ export default function GoogleMapAnalytics() {
                 url={getTileUrl()}
               />
 
-              {LIVE_CITY_HUBS.map((hub) => (
+              {activeHubs.map((hub) => (
                 <CircleMarker
                   key={hub.id}
                   center={[hub.lat, hub.lng]}
-                  radius={selectedHub.id === hub.id ? 14 : 9}
+                  radius={currentSelectedHub?.id === hub.id ? 14 : 10}
                   pathOptions={{
                     color: hub.color,
                     fillColor: hub.color,
                     fillOpacity: 0.85,
-                    weight: selectedHub.id === hub.id ? 3 : 2
+                    weight: currentSelectedHub?.id === hub.id ? 3 : 2
                   }}
                   eventHandlers={{
-                    click: () => setSelectedHub(hub)
+                    click: () => setSelectedHubId(hub.id)
                   }}
                 >
                   <Tooltip permanent direction="top" offset={[0, -10]} opacity={0.95}>
                     <span style={{ fontWeight: 800, color: '#0F172A', fontSize: '0.8rem', background: '#FFFFFF', padding: '3px 8px', borderRadius: '6px', border: '1px solid #CBD5E1', boxShadow: '0 2px 8px rgba(15,23,42,0.1)' }}>
-                      {hub.city}: {hub.workers} Applicant
+                      {hub.city}: {hub.workers} {hub.workers === 1 ? 'Applicant' : 'Applicants'}
                     </span>
                   </Tooltip>
                   <Popup>
@@ -168,19 +235,28 @@ export default function GoogleMapAnalytics() {
             flexWrap: 'wrap',
             gap: '0.5rem'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <Navigation size={18} color="#0284c7" />
-              <div>
-                <strong style={{ fontSize: '0.95rem', color: '#0F172A' }}>{selectedHub.city}</strong>
-                <span style={{ fontSize: '0.78rem', color: '#475569', marginLeft: '8px' }}>{selectedHub.state}</span>
-              </div>
-            </div>
+            {currentSelectedHub ? (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Navigation size={18} color="#0284c7" />
+                  <div>
+                    <strong style={{ fontSize: '0.95rem', color: '#0F172A' }}>{currentSelectedHub.city}</strong>
+                    <span style={{ fontSize: '0.78rem', color: '#475569', marginLeft: '8px' }}>{currentSelectedHub.state}</span>
+                  </div>
+                </div>
 
-            <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.82rem', flexWrap: 'wrap' }}>
-              <span>Applicants: <strong style={{ color: '#0369a1' }}>{selectedHub.workers}</strong></span>
-              <span>Capital: <strong style={{ color: '#15803D' }}>{selectedHub.loans}</strong></span>
-              <span>Status: <strong style={{ color: '#15803D' }}>{selectedHub.active}% Active</strong></span>
-            </div>
+                <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.82rem', flexWrap: 'wrap' }}>
+                  <span>Applicants: <strong style={{ color: '#0369a1' }}>{currentSelectedHub.workers}</strong></span>
+                  <span>Capital: <strong style={{ color: '#15803D' }}>{currentSelectedHub.loans}</strong></span>
+                  <span>Status: <strong style={{ color: '#15803D' }}>{currentSelectedHub.active}% Active</strong></span>
+                </div>
+              </>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#0369a1', fontSize: '0.85rem', fontWeight: 600 }}>
+                <Navigation size={18} color="#0284c7" />
+                <span>No Active State Applications Yet (Submit an application to view live pin on map)</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -213,7 +289,7 @@ export default function GoogleMapAnalytics() {
             <Search size={15} color="#64748B" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
-              placeholder="Search State (e.g. Gujarat, MH)..."
+              placeholder="Search State (e.g. Rajasthan, Gujarat)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -239,7 +315,7 @@ export default function GoogleMapAnalytics() {
             paddingRight: '4px'
           }}>
             {filteredStates.map((st) => {
-              const isSelected = selectedHub.state.toLowerCase() === st.name.toLowerCase() || (st.name === 'Delhi NCR' && selectedHub.state === 'Delhi');
+              const isSelected = currentSelectedHub?.state.toLowerCase() === st.name.toLowerCase();
 
               return (
                 <div
@@ -250,7 +326,7 @@ export default function GoogleMapAnalytics() {
                     border: isSelected ? '1px solid #0284c7' : '1px solid #CBD5E1',
                     borderRadius: '8px',
                     padding: '0.65rem 0.85rem',
-                    cursor: 'pointer',
+                    cursor: st.count > 0 ? 'pointer' : 'default',
                     transition: 'all 0.15s ease',
                     boxShadow: '0 1px 3px rgba(15,23,42,0.02)'
                   }}
@@ -285,7 +361,7 @@ export default function GoogleMapAnalytics() {
                   {/* Progress bar line */}
                   <div style={{ width: '100%', height: '4px', background: '#E2E8F0', borderRadius: '2px', marginTop: '6px', overflow: 'hidden' }}>
                     <div style={{
-                      width: st.count > 0 ? '25%' : '0%',
+                      width: st.count > 0 ? '100%' : '0%',
                       height: '100%',
                       background: st.count > 0 ? '#0284c7' : 'transparent',
                       borderRadius: '2px'

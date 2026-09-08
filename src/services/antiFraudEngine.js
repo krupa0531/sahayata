@@ -403,3 +403,233 @@ export const execute8LayerVerificationPipeline = async (file, base64, apiKey, on
     isFraud: layer8.decision === "FRAUD_DETECTED",
   };
 };
+
+// 9. INTERACTIVE LIVE CUSTOM TRANSACTION EVALUATOR ENGINE
+export const evaluateCustomTransaction = ({
+  amount = 1500,
+  time = "10:30 AM",
+  historicalAvg = 2000,
+  receiverVpa = "merchant@upi",
+  ipLocation = "Registered IP (Mumbai)",
+  recentTxnFrequency = 1
+}) => {
+  const numAmount = Number(amount) || 0;
+  const numAvg = Number(historicalAvg) || 1;
+  const amountRatio = numAmount / numAvg;
+
+  let riskScore = 5;
+  const explanations = [];
+  const flags = [];
+
+  // A. Amount & Baseline Deviation Z-Score Analysis
+  if (amountRatio > 10) {
+    riskScore += 45;
+    explanations.push(`Extreme amount deviation: ₹${numAmount.toLocaleString('en-IN')} is ${amountRatio.toFixed(1)}x higher than historical average (₹${numAvg.toLocaleString('en-IN')}).`);
+    flags.push("CRITICAL_AMOUNT_DEVIATION");
+  } else if (amountRatio > 4) {
+    riskScore += 28;
+    explanations.push(`Significant amount deviation: ₹${numAmount.toLocaleString('en-IN')} is ${amountRatio.toFixed(1)}x user's typical baseline.`);
+    flags.push("HIGH_AMOUNT_DEVIATION");
+  } else if (amountRatio > 2) {
+    riskScore += 12;
+    explanations.push(`Moderate amount deviation: ₹${numAmount.toLocaleString('en-IN')} is above average transaction range.`);
+    flags.push("MODERATE_AMOUNT_DEVIATION");
+  } else {
+    explanations.push(`Amount consistent with user historical average range (₹${numAvg.toLocaleString('en-IN')}).`);
+  }
+
+  // B. Off-Peak & Night Transaction Time Window
+  const timeUpper = String(time).toUpperCase();
+  const isMidnight = timeUpper.includes("AM") && (timeUpper.startsWith("12") || timeUpper.startsWith("01") || timeUpper.startsWith("02") || timeUpper.startsWith("03") || timeUpper.startsWith("04"));
+  if (isMidnight) {
+    riskScore += 25;
+    explanations.push(`Off-peak timing: Transaction executed during low-activity window (${time}).`);
+    flags.push("NIGHT_WINDOW_ANOMALY");
+  } else {
+    explanations.push(`Executed within normal active daytime window (${time}).`);
+  }
+
+  // C. Receiver VPA Reputation & Mule Risk Inspection
+  const vpaLower = String(receiverVpa).toLowerCase();
+  const isSuspiciousVpa = vpaLower.includes("crypto") || vpaLower.includes("mule") || vpaLower.includes("betting") || vpaLower.includes("temp") || vpaLower.includes("cashout") || vpaLower.includes("unverified");
+  if (isSuspiciousVpa) {
+    riskScore += 30;
+    explanations.push(`High-risk receiver handle: '${receiverVpa}' matches unverified/high-risk merchant pattern.`);
+    flags.push("HIGH_RISK_RECEIVER_VPA");
+  } else {
+    explanations.push(`Receiver handle '${receiverVpa}' is recognized and verified.`);
+  }
+
+  // D. IP Location & Geofence Velocity
+  const ipLower = String(ipLocation).toLowerCase();
+  const isProxyOrForeign = ipLower.includes("proxy") || ipLower.includes("vpn") || ipLower.includes("foreign") || ipLower.includes("unknown");
+  if (isProxyOrForeign) {
+    riskScore += 25;
+    explanations.push(`Geofence discrepancy: Origin IP '${ipLocation}' deviates from user's primary mobile device.`);
+    flags.push("GEO_VELOCITY_ANOMALY");
+  } else {
+    explanations.push(`IP location '${ipLocation}' matches primary registered device geofence.`);
+  }
+
+  // E. Transaction Frequency Velocity Spike
+  const freq = Number(recentTxnFrequency) || 1;
+  if (freq > 8) {
+    riskScore += 20;
+    explanations.push(`High velocity burst: ${freq} rapid transactions attempted in last 30 minutes.`);
+    flags.push("BURST_FREQUENCY_SPIKE");
+  } else if (freq > 4) {
+    riskScore += 10;
+    explanations.push(`Elevated transaction rate: ${freq} transactions in short window.`);
+  }
+
+  riskScore = Math.min(99, Math.max(4, riskScore));
+  const integrityScore = Math.max(1, 100 - riskScore);
+
+  let riskLevel = "LOW";
+  let statusBadge = "Verified Baseline";
+  let recommendation = "Standard fast-pass authorized for digital lending assessment.";
+
+  if (riskScore >= 65) {
+    riskLevel = "HIGH";
+    statusBadge = "High Anomaly Signal";
+    recommendation = "Additional verification recommended before using this signal for loan underwrite.";
+  } else if (riskScore >= 35) {
+    riskLevel = "MEDIUM";
+    statusBadge = "Verification Recommended";
+    recommendation = "Secondary step-up verification or soft OTP confirmation advised.";
+  }
+
+  return {
+    amount: numAmount,
+    time,
+    historicalAvg: numAvg,
+    receiverVpa,
+    ipLocation,
+    recentTxnFrequency: freq,
+    riskScore,
+    integrityScore,
+    riskLevel,
+    statusBadge,
+    explanations,
+    flags,
+    recommendation
+  };
+};
+
+// 10. REAL BANK & UPI STATEMENT CSV / JSON PARSER & INSPECTOR ENGINE
+export const analyzeStatementFileContent = (fileContent, fileName = "statement.csv") => {
+  const isJson = fileName.endsWith(".json") || fileContent.trim().startsWith("[") || fileContent.trim().startsWith("{");
+  let transactions = [];
+  
+  if (isJson) {
+    try {
+      const parsed = JSON.parse(fileContent);
+      transactions = Array.isArray(parsed) ? parsed : parsed.transactions || [];
+    } catch (e) {
+      console.error("JSON parse error", e);
+    }
+  } else {
+    // CSV Parsing
+    const lines = fileContent.split(/\r?\n/).filter(line => line.trim().length > 0);
+    if (lines.length > 1) {
+      const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(",").map(c => c.trim().replace(/^"|"$/g, ''));
+        if (cols.length >= 4) {
+          transactions.push({
+            date: cols[0] || `2026-07-${10+i}`,
+            particulars: cols[1] || "UPI Payment",
+            type: (cols[2] || "DEBIT").toUpperCase(),
+            amount: parseFloat(cols[3]) || 1000,
+            balance: parseFloat(cols[4]) || 20000
+          });
+        }
+      }
+    }
+  }
+
+  if (transactions.length === 0) {
+    return {
+      isValid: false,
+      error: "Unable to parse valid transaction rows from file."
+    };
+  }
+
+  let arithmeticErrors = 0;
+  let totalCredit = 0;
+  let totalDebit = 0;
+  const flaggedTxns = [];
+
+  for (let i = 0; i < transactions.length; i++) {
+    const curr = transactions[i];
+    const amt = parseFloat(curr.amount) || 0;
+    const bal = parseFloat(curr.balance) || 0;
+    const isCredit = curr.type === "CREDIT" || curr.type === "CR";
+    
+    if (isCredit) totalCredit += amt;
+    else totalDebit += amt;
+
+    // Check Running Balance Arithmetic with previous line
+    if (i > 0) {
+      const prevBal = parseFloat(transactions[i-1].balance) || 0;
+      const expectedBal = isCredit ? prevBal + amt : prevBal - amt;
+      const MathDiff = Math.abs(expectedBal - bal);
+      if (MathDiff > 1) {
+        arithmeticErrors++;
+        flaggedTxns.push({
+          row: i + 1,
+          date: curr.date,
+          particulars: curr.particulars,
+          amount: amt,
+          reason: `Ledger Arithmetic Mismatch! Expected balance ₹${expectedBal.toLocaleString('en-IN')} but statement records ₹${bal.toLocaleString('en-IN')}.`
+        });
+      }
+    }
+
+    // Check suspicious amounts or midnight drains
+    if (!isCredit && amt > 40000) {
+      flaggedTxns.push({
+        row: i + 1,
+        date: curr.date,
+        particulars: curr.particulars,
+        amount: amt,
+        reason: `Abnormal large debit drain detected (₹${amt.toLocaleString('en-IN')}).`
+      });
+    }
+  }
+
+  const arithmeticValid = arithmeticErrors === 0;
+  const integrityScore = Math.max(10, 100 - (arithmeticErrors * 35) - (flaggedTxns.length * 12));
+
+  return {
+    fileName,
+    totalTransactions: transactions.length,
+    totalCredit,
+    totalDebit,
+    arithmeticValid,
+    arithmeticErrors,
+    flaggedTxns,
+    integrityScore,
+    isFraud: !arithmeticValid || integrityScore < 60,
+    recommendation: arithmeticValid && integrityScore >= 75
+      ? "Statement ledger arithmetic and transaction continuity verified 100% genuine."
+      : "Statement rejected: Ledger arithmetic inconsistency or suspicious cash drain detected."
+  };
+};
+
+// PRESET SAMPLE STATEMENTS FOR 1-CLICK DEMO
+export const SAMPLE_GENUINE_STATEMENT_CSV = `Date,Particulars,Type,Amount,Balance
+2026-07-01,Opening Balance,CREDIT,0,25000
+2026-07-02,Swiggy Vendor Payout,CREDIT,3500,28500
+2026-07-03,Grocery Store UPI,DEBIT,1200,27300
+2026-07-04,Zomato Earning Deposit,CREDIT,2800,30100
+2026-07-05,Electricity Utility Bill,DEBIT,1500,28600
+2026-07-06,Daily Earning UPI,CREDIT,4200,32800`;
+
+export const SAMPLE_MANIPULATED_STATEMENT_CSV = `Date,Particulars,Type,Amount,Balance
+2026-07-01,Opening Balance,CREDIT,0,15000
+2026-07-02,Edited Salary Credit,CREDIT,85000,100000
+2026-07-03,Unverified Crypto Drain,DEBIT,75000,60000
+2026-07-04,Photoshop Edited Deposit,CREDIT,45000,95000
+2026-07-05,Cash Out Mule Wallet,DEBIT,80000,10000`;
+

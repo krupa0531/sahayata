@@ -31,6 +31,8 @@ import autoTable from "jspdf-autotable";
 import "./SahayataHomepage.css";
 import { execute8LayerVerificationPipeline } from "../services/antiFraudEngine.js";
 import FraudAnalyticsDashboard from "./FraudAnalyticsDashboard.jsx";
+import ForensicDocumentModal from "./ForensicDocumentModal.jsx";
+import { analyzeDocumentForensics, JUDGE_DEMO_ATTACKS } from "../services/forensicScanner.js";
 import { recordAiConversation, recordApplicationSubmission, recordFraudAttempt } from "../services/realtimeSync.js";
 import { evaluateWorkerSchemes, submitApplication } from "../api.js";
 import {
@@ -83,11 +85,12 @@ export default function FinancialTwinModule({ lang, navigateTo }) {
     monthlyIncome: 15600,
     age: 28,
     occupation: "Street Vendor / Delivery Partner",
-    location: "Gujarat",
+    location: "Rajasthan",
   });
 
   const [finalReport, setFinalReport] = useState(null);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [forensicModalData, setForensicModalData] = useState(null);
   const [scanStepText, setScanStepText] = useState("");
   const [geminiApiKey] = useState(
     import.meta.env.VITE_GEMINI_API_KEY || localStorage.getItem("SAI_GEMINI_KEY") || ""
@@ -190,7 +193,7 @@ export default function FinancialTwinModule({ lang, navigateTo }) {
     }
   }, [lang]);
 
-  // Handle pending speech from Voice Assistant navigation
+  // Handle pending speech from Voice Assistant navigation & render message in chat UI
   useEffect(() => {
     const pendingText = sessionStorage.getItem("sai_pending_speak_text");
     const pendingLang = sessionStorage.getItem("sai_pending_speak_lang") || currentLang;
@@ -198,6 +201,18 @@ export default function FinancialTwinModule({ lang, navigateTo }) {
       sessionStorage.removeItem("sai_pending_speak_intent");
       sessionStorage.removeItem("sai_pending_speak_text");
       sessionStorage.removeItem("sai_pending_speak_lang");
+
+      const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          sender: "sai",
+          text: pendingText,
+          time: timeStr,
+        },
+      ]);
+
       setTimeout(() => {
         speakSaiUtterance(pendingText, pendingLang);
       }, 350);
@@ -680,15 +695,6 @@ export default function FinancialTwinModule({ lang, navigateTo }) {
       setFinalReport(evaluatedReport);
       setCurrentStep(STEPS.FINAL_REPORT);
 
-      if (!hasRecordedSessionRef.current) {
-        hasRecordedSessionRef.current = true;
-        recordAiConversation(conversationSessionId.current, {
-          userName: updatedWorker.fullName || workerData.fullName || "Worker Applicant",
-          language: currentLang,
-          status: "completed",
-        });
-      }
-
       const msgHi =
         `सभी आवश्यक विवरण सत्यापित हो चुके हैं। आपकी आय, आयु और व्यवसाय के आधार पर सरकारी योजनाओं और सचेत ऋण की पात्रता रिपोर्ट तैयार कर दी गई है।\n\n` +
         `कृपया नीचे दिए गए रिपोर्ट कार्ड की समीक्षा करें और आगे बढ़ने के लिए Submit बटन दबाएं।`;
@@ -746,7 +752,10 @@ export default function FinancialTwinModule({ lang, navigateTo }) {
           scheme: recScheme,
           schemeName: recScheme,
           lender: "State Bank of India (SBI)",
-          recommendedBank: "State Bank of India (SBI)"
+          recommendedBank: "State Bank of India (SBI)",
+          location: workerData.location || "Rajasthan",
+          state: workerData.location || "Rajasthan",
+          city: workerData.location?.includes("Jaipur") ? "Jaipur" : "Jaipur Hub",
         });
       } catch (e) {
         console.warn("Realtime sync warning:", e);
@@ -847,7 +856,7 @@ export default function FinancialTwinModule({ lang, navigateTo }) {
       }
     }
 
-    if ((aiResp.showReport || aiResp.isSubmitted) && !hasRecordedSessionRef.current) {
+    if (aiResp.isSubmitted && !hasRecordedSessionRef.current) {
       hasRecordedSessionRef.current = true;
       recordAiConversation(conversationSessionId.current, {
         userName: workerData.fullName || "Worker Applicant",
@@ -1020,6 +1029,15 @@ export default function FinancialTwinModule({ lang, navigateTo }) {
 
       {/* Anti-Fraud Dashboard Modal */}
       {showDashboard && <FraudAnalyticsDashboard onClose={() => setShowDashboard(false)} />}
+      
+      {/* Forensic Document Inspector Modal */}
+      {forensicModalData && (
+        <ForensicDocumentModal
+          forensicData={forensicModalData}
+          onClose={() => setForensicModalData(null)}
+          lang={currentLang}
+        />
+      )}
 
       {/* Top Navigation Bar */}
       <div style={{ position: "fixed", top: "24px", left: "24px", right: "24px", zIndex: 100, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1129,6 +1147,7 @@ export default function FinancialTwinModule({ lang, navigateTo }) {
 
       {/* Main Conversational Container */}
       <main className="bolt-hero-content">
+
         <h1 className="bolt-main-title">
           {currentLang === "hi" ? "नमस्ते। " : currentLang === "gu" ? "નમસ્તે. " : "Hello. "}
           <span style={{ background: "linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #60a5fa 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", display: "inline-block" }}>

@@ -110,7 +110,7 @@ export default function AdminAnalyticsModule({ navigateTo, lang }) {
     return () => window.removeEventListener('sahayata_analytics_update', handleSync);
   }, []);
 
-  const totalWorkersCount = analyticsState.totalWorkersCount ?? 4;
+  const totalWorkersCount = analyticsState.totalWorkersCount ?? 0;
   const loansDisbursed = analyticsState.disbursedLoansAmount ? `₹${analyticsState.disbursedLoansAmount.toLocaleString('en-IN')}` : '₹0';
 
   useEffect(() => {

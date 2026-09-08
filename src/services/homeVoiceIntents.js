@@ -104,17 +104,18 @@ export const HOME_VOICE_INTENTS = {
 
   ELIGIBILITY_CHECK: {
     patterns: [
-      "eligibility", "calculate", "calculator", "patrata", "yogya", "limit", "kitna milega", "ketli malshe", "how much loan",
-      "पात्रता", "कैलकुलेटर", "सीमा", "कितना मिलेगा", "पात्र", "પાત્રતા", "કેલ્ક્યુલેટર", "મર્યાદા", "કેટલા મળશે"
+      "eligibility", "eligible", "loan eligibility", "loan eligible", "eligible for loan", "loan ke liye eligible", "eligible hu ya nahi",
+      "patra hu ya nahi", "calculate", "calculator", "patrata", "yogya", "limit", "kitna milega", "ketli malshe", "how much loan",
+      "पात्रता", "कैलकुलेटर", "सीमा", "कितना मिलेगा", "पात्र", "एलिजिबल", "पात्र हूँ या नहीं", "पात्र है या नहीं", "पात्रता जांच",
+      "પાત્રતા", "કેલ્ક્યુલેટર", "મર્યાદા", "કેટલા મળશે", "એલિજિબલ"
     ],
     responses: {
-      en: "Use our real-time calculator to estimate your micro-loan limit based on your daily income and expenses.",
-      hi: "पात्रता कैलकुलेटर से आप अपनी दैनिक कमाई और खर्च के आधार पर सटीक लोन सीमा तुरंत जांच सकते हैं।",
-      gu: "પાત્રતા કેલ્ક્યુલેટરથી તમે તમારી દૈનિક આવક અને ખર્ચ મુજબ સચોટ લોન મર્યાદા ચકાસી શકો છો.",
+      en: "Taking you to Sahayata AI Assistant. Let us check whether you are eligible for loans and government schemes or not. Please provide your details to begin.",
+      hi: "मैं आपको सहायता AI सहायक पेज पर ले जा रहा हूँ। आइए जांचते हैं कि आप लोन और सरकारी योजनाओं के लिए पात्र (Eligible) हैं या नहीं। कृपया अपना नाम और विवरण बताएं।",
+      gu: "હું તમને સહાયતા AI સહાયક પેજ પર લઈ જઈ રહ્યો છું. ચાલો જોઈએ કે તમે લોન અને સરકારી યોજનાઓ માટે પાત્ર (Eligible) છો કે નહીં. કૃપા કરીને તમારું નામ અને વિગતો જણાવો.",
     },
     action: (handlers) => {
-      handlers.scrollToSection("application-journey");
-      handlers.onTriggerStep && handlers.onTriggerStep(1);
+      handlers.navigateTo("/financial-twin");
     },
   },
 

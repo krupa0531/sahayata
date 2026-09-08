@@ -90,12 +90,12 @@ export default function RealTimeFeed() {
   const handleResetBaseline = () => {
     const fresh = resetAnalyticsStateToZero();
     setAnalyticsState(fresh);
-    showToast('AI Conversation Counter reset to clean baseline (3 sessions)');
+    showToast('Analytics counters reset to clean 0 baseline');
   };
 
   // Real Sahayata App Events built directly from the system state
-  const convCount = analyticsState.aiConversationsCount ?? 3;
-  const fraudCount = analyticsState.fraudAttemptsCount ?? 3;
+  const convCount = analyticsState.aiConversationsCount ?? 0;
+  const fraudCount = analyticsState.fraudAttemptsCount ?? 0;
   const appCount = analyticsState.submittedApplicationsCount ?? 0;
   const disbursedAmt = analyticsState.disbursedLoansAmount ?? 0;
   const recentApps = analyticsState.recentApplications || [];
