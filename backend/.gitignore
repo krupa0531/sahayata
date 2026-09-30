@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.py[cod]
+uploads/
+.venv/
+venv/
+.uv-cache/
+tmp/
+outputs/
+_report_render/
+*.db
