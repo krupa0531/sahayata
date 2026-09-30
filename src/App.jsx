@@ -248,7 +248,7 @@ export default function App() {
                 {t("navHome", "Home")}
               </a>
               <a href="#" className={`nav-item ${currentPath === "/financial-twin" ? "active" : ""}`} onClick={(e) => { e.preventDefault(); navigateTo("/financial-twin"); }}>
-                {t("navAi", "AI Financial Twin")}
+                {t("navAi", "Sahayak")}
               </a>
               <a href="#how-it-works" className="nav-item" onClick={(e) => { e.preventDefault(); scrollTo("how-it-works"); }}>
                 {t("howItWorks", "How It Works")}
@@ -260,7 +260,7 @@ export default function App() {
 
             <div className={`header-actions ${mobileMenuOpen ? "mobile-open" : ""}`}>
               <div className="lang-selector-container">
-                <Languages size={16} className="lang-icon" />
+                <Languages size={15} className="lang-icon" />
                 <select
                   className="lang-select"
                   value={lang}
@@ -273,30 +273,30 @@ export default function App() {
                 </select>
               </div>
 
-              {/* WHITE LENDER COMMAND CENTER BUTTON */}
+              {/* WHITE BANK DASHBOARD BUTTON */}
               <button
                 className="btn-lender-white"
                 onClick={() => navigateTo("/admin")}
               >
-                <Landmark size={16} /> {t("navLender", "Lender Command Center")}
+                <Landmark size={15} /> {t("navLender", "Bank Dashboard")}
               </button>
 
               {/* REGISTER AND LOGIN BUTTONS */}
               {user ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span className="user-chip" style={{ background: "rgba(56, 189, 248, 0.15)", border: "1px solid rgba(56, 189, 248, 0.3)", color: "#38bdf8", padding: "6px 14px", borderRadius: "999px", fontSize: "13px", fontWeight: "700" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
+                  <span className="user-chip" style={{ background: "rgba(56, 189, 248, 0.15)", border: "1px solid rgba(56, 189, 248, 0.3)", color: "#38bdf8", padding: "5px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "700", whiteSpace: "nowrap" }}>
                     Hi, {user.full_name || user.name || "User"}
                   </span>
                   <button
                     className="btn-header-login"
-                    style={{ padding: "6px 12px", fontSize: "12px", background: "rgba(239, 68, 68, 0.15)", color: "#fca5a5", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "999px", cursor: "pointer" }}
+                    style={{ padding: "5px 12px", fontSize: "12px", background: "rgba(239, 68, 68, 0.15)", color: "#fca5a5", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "999px", cursor: "pointer", whiteSpace: "nowrap" }}
                     onClick={handleLogout}
                   >
                     Logout
                   </button>
                 </div>
               ) : (
-                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
                   <button className="btn-header-login" onClick={() => setAuthMode("login")}>{t("navLogin", "Login")}</button>
                   <button className="btn-header-register" onClick={() => setAuthMode("register")}>{t("navRegister", "Register")}</button>
                 </div>

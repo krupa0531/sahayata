@@ -308,16 +308,18 @@ export default function SahayataHomepage({ lang = "en", changeLang, navigateTo, 
           </div>
 
           <h1 className="sai-hero-heading">
-            {lang === "hi" ? "नमस्ते," : lang === "gu" ? "નમસ્તે," : "Hello,"} <br />
-            {lang === "hi" ? "मैं हूँ " : lang === "gu" ? "હું છું " : "I'm "}<span className="sai-gradient-text">SAI</span>
+            {lang === "hi" ? "गिग कामगारों और डिलीवरी पार्टनर्स के लिए " : lang === "gu" ? "ગીગ વર્કર્સ અને ડિલિવરી પાર્ટનર્સ માટે " : "Financial Support for "} <br />
+            <span className="sai-gradient-text">
+              {lang === "hi" ? "वित्तीय सहायता" : lang === "gu" ? "નાણાકીય સહાય" : "Gig Workers & Delivery Partners"}
+            </span>
           </h1>
 
           <p className="sai-hero-sub">
             {lang === "hi"
-              ? "भारत के गिग कामगारों, स्ट्रीट वेंडरों और दैनिक वेतनभोगियों के लिए आपका एआई फाइनेंशियल ट्विन।"
+              ? "भारत के गिग कामगारों, डिलीवरी पार्टनर्स, स्ट्रीट वेंडरों और दैनिक वेतनभोगियों के लिए आपका एआई फाइनेंशियल ट्विन एवं तत्काल सूक्ष्म ऋण सहायता।"
               : lang === "gu"
-              ? "ભારતના ગીગ વર્કર્સ, ડિલિવરી પાર્ટનર્સ અને દૈનિક શ્રમિકો માટે તમારું AI ફાઇનાન્શિયલ ટ્વિન."
-              : "Your AI Financial Twin for India's Gig Workers, Delivery Partners and Daily Wage Earners."}
+              ? "ભારતના ગીગ વર્કર્સ, ડિલિવરી પાર્ટનર્સ, સ્ટ્રીટ વેન્ડર્સ અને દૈનિક શ્રમિકો માટે તમારું AI ફાઇનાન્શિયલ ટ્વિન અને ત્વરિત સૂક્ષ્મ-ધિરાણ સહાય."
+              : "Your AI Financial Twin & Instant Financial Support for India's Gig Workers, Delivery Partners, Street Vendors and Daily Wage Earners."}
           </p>
 
           {/* AI Floating Glass Prompt Box */}
