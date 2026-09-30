@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Sahayata
 
 Sahayata is a financial-support portal for gig workers, delivery partners, street vendors, farmers, and daily-wage earners. It presents scheme discovery, eligibility checks, loan planning, KYC, application tracking, and a UPI-informed credit view in one guided journey.
@@ -25,3 +26,7 @@ The frontend proxies `/api` and `/health` calls to the local backend. If the bac
 ## Voice guide
 
 The bottom-right voice assistant supports English, Hindi, and Gujarati guidance. It never asks a user to share an OTP; OTPs should only be entered by the user on an official service page.
+=======
+# sahayata
+AI-powered financial fraud detection and financial inclusion platform for underserved informal and gig workers.
+>>>>>>> 92a2e9ee0278789ce27aea5d105e355bc911d089
